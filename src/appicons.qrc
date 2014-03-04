@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/app">
+        <file>images/eraser.svg</file>
+        <file>images/folder2.svg</file>
+        <file>images/vmeter.xpm</file>
+    </qresource>
+</RCC>
