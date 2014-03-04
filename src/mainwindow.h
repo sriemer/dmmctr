@@ -96,6 +96,8 @@ private:
     QComboBox    *trigSource;
     QLabel       *trigSamplesLbl;
     QSpinBox     *trigSamples;
+    QLabel       *trigRateLbl;
+    QComboBox    *trigRate;
     QLabel       *exportLbl;
     QWidget      *exportWidget;
     QHBoxLayout  *exportLayout;

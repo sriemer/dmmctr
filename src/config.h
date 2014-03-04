@@ -47,6 +47,7 @@ enum ConfigIDType
     AUTOZ_ID,
     TRIG_SRC_ID,
     SAMP_ID,
+    TRIG_RATE_ID,
     EXPORT_ID,
     CFG_ID_SIZE  // always the last entry
 };

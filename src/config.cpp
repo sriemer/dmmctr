@@ -34,7 +34,7 @@
 Config::Config()
 {
     configIDs = QVector<int>() << 0 << 3 << 0 << 0 << 1 << 0  // Port defaults
-                << 0 << 3 << 0 << 0 << 1  // DMM defaults
+                << 0 << 3 << 0 << 0 << 1 << 0  // DMM defaults
                 << 0;  // Export default
 
     configStrings = QVector<QString>() << QString("") <<   // Export defaults

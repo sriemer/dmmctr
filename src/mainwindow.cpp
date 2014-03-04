@@ -66,6 +66,8 @@ MainWindow::MainWindow()
     trigSource         = new QComboBox;
     trigSamplesLbl     = new QLabel;
     trigSamples        = new QSpinBox;
+    trigRateLbl        = new QLabel;
+    trigRate           = new QComboBox;
     exportLbl         = new QLabel;
     exportWidget      = new QWidget;
     exportLayout      = new QHBoxLayout;
@@ -200,7 +202,9 @@ void MainWindow::initLayout()
     trigLayout->addWidget(trigSourceLbl, 0, 0, 1, 2, Qt::AlignBottom);
     trigLayout->addWidget(trigSource, 1, 0, Qt::AlignTop);
     trigLayout->addWidget(trigSamplesLbl, 2, 0, Qt::AlignBottom);
-    trigLayout->addWidget(trigSamples, 3, 0, 3, 1, Qt::AlignTop);
+    trigLayout->addWidget(trigSamples, 3, 0, Qt::AlignTop);
+    trigLayout->addWidget(trigRateLbl, 4, 0, Qt::AlignBottom);
+    trigLayout->addWidget(trigRate, 5, 0, Qt::AlignTop);
     trigWidget->setLayout(trigLayout);
     dmmTabWidget->addTab(trigWidget, tr("Trigger/Samples"));
 
@@ -274,6 +278,10 @@ void MainWindow::initControls()
     trigSamples->setValue(cfg->getID(SAMP_ID));
     trigSamples->setMinimum(1);
     trigSamples->setMaximum(5000);
+
+    trigRateLbl->setText(tr("Trigger Rate"));
+    trigRate->addItems(sets.getTrigRates());
+    trigRate->setCurrentIndex(cfg->getID(TRIG_RATE_ID));
 
     pixmapSelect = new QPixmap(":/app/images/folder2.svg", "SVG");
     pixmapClear = new QPixmap(":/app/images/eraser.svg", "SVG");
@@ -500,7 +508,7 @@ void MainWindow::start()
         stopBitsComboBox->currentIndex() << measFunct->currentIndex() <<
         measIntegrTime->currentIndex() << measAutoZero->currentIndex() <<
         trigSource->currentIndex() << trigSamples->value() <<
-        cfg->getID(EXPORT_ID));
+        trigRate->currentIndex() << cfg->getID(EXPORT_ID));
 
     dmmCtr->setConfig(cfg);
     emit timeoutIndicat->setOff();

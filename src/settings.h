@@ -44,6 +44,8 @@ public:
     QString      getMeasAutoZero   (int idx);
     QStringList  getTrigSources    (void);
     QString      getTrigSource     (int idx);
+    QStringList  getTrigRates      (void);
+    QString      getTrigRate       (int idx);
 
 private:
     QStringList baudRates;
@@ -64,6 +66,8 @@ private:
     QStringList measAutoZero2;
     QStringList trigSources;
     QStringList trigSources2;
+    QStringList trigRates;
+    QStringList trigRates2;
 };
 
 #endif

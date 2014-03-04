@@ -53,6 +53,10 @@ Settings::Settings()
 
     trigSources = QStringList() << tr("Immediate") << tr("External");
     trigSources2 = QStringList() << "IMM" << "EXT";
+
+    trigRates = QStringList() << tr("Slow (2.5/s)") << tr("Medium (5/s)")
+        << tr("Fast (20/s)");
+    trigRates2 = QStringList() << "S" << "M" << "F";
 }
 
 // Port Settings
@@ -145,4 +149,14 @@ QStringList Settings::getTrigSources()
 QString Settings::getTrigSource(int idx)
 {
     return trigSources2.at(idx);
+}
+
+QStringList Settings::getTrigRates()
+{
+    return trigRates;
+}
+
+QString Settings::getTrigRate(int idx)
+{
+    return trigRates2.at(idx);
 }
