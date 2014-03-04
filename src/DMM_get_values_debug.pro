@@ -28,8 +28,8 @@ TRANSLATIONS = de_DE.ts
 RESOURCES += ledindicator.qrc \
     appicons.qrc
 OTHER_FILES += appicon.rc
-CONFIG += xml
-INCLUDEPATH += /usr/include/qt4/QtExtSerialPort
+CONFIG += xml \
+    extserialport
 LIBS += -lqextserialport
 QMAKE_RESOURCE_FLAGS += -no-compress
 win32 { 
