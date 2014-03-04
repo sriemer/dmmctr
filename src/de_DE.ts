@@ -4,243 +4,242 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="mainwindow.cpp" line="38"/>
+        <location filename="mainwindow.cpp" line="52"/>
         <source>Timeout</source>
-        <translation type="unfinished">Timeout</translation>
+        <translation>Timeout</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="39"/>
+        <location filename="mainwindow.cpp" line="53"/>
         <source>Error</source>
-        <translation type="unfinished">Fehler</translation>
-    </message>
-    <message>
-        <location filename="mainwindow.cpp" line="110"/>
-        <source>&amp;File</source>
-        <translation type="unfinished">&amp;Datei</translation>
-    </message>
-    <message>
-        <location filename="mainwindow.cpp" line="111"/>
-        <source>&amp;Options</source>
-        <translation type="unfinished">&amp;Optionen</translation>
-    </message>
-    <message>
-        <location filename="mainwindow.cpp" line="112"/>
-        <source>&amp;Help</source>
-        <translation type="unfinished">&amp;Hilfe</translation>
-    </message>
-    <message>
-        <location filename="mainwindow.cpp" line="114"/>
-        <source>&amp;Quit</source>
-        <translation type="unfinished">&amp;Beenden</translation>
-    </message>
-    <message>
-        <location filename="mainwindow.cpp" line="115"/>
-        <source>CTRL+Q</source>
-        <translation type="unfinished">CTRL+Q</translation>
-    </message>
-    <message>
-        <location filename="mainwindow.cpp" line="119"/>
-        <source>Export to &amp;CSV</source>
-        <translation type="unfinished">Exportieren nach &amp;CSV</translation>
+        <translation>Fehler</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="124"/>
-        <source>Export to &amp;Excel</source>
-        <translation type="unfinished">Exportieren nach &amp;Excel</translation>
+        <source>&amp;File</source>
+        <translation>&amp;Datei</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="125"/>
+        <source>&amp;Options</source>
+        <translation>&amp;Optionen</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="126"/>
+        <source>&amp;Help</source>
+        <translation>&amp;Hilfe</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="128"/>
+        <source>&amp;Quit</source>
+        <translation>&amp;Beenden</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="129"/>
+        <source>CTRL+Q</source>
+        <translation>CTRL+Q</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="133"/>
+        <source>Export to &amp;CSV</source>
+        <translation>Exportieren nach &amp;CSV</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="138"/>
+        <source>Export to &amp;Excel</source>
+        <translation>Exportieren nach &amp;Excel</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="147"/>
         <source>&amp;About</source>
-        <translation type="unfinished">Ü&amp;ber</translation>
+        <translation>Ü&amp;ber</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="137"/>
+        <location filename="mainwindow.cpp" line="151"/>
         <source>About &amp;Qt</source>
-        <translation type="unfinished">Über &amp;Qt</translation>
+        <translation>Über &amp;Qt</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="184"/>
+        <location filename="mainwindow.cpp" line="198"/>
         <source>Measurement</source>
-        <translation type="unfinished">Messung</translation>
+        <translation>Messung</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="191"/>
+        <location filename="mainwindow.cpp" line="205"/>
         <source>Trigger/Samples</source>
-        <translation type="unfinished">Auslösung/Abtastung</translation>
+        <translation>Auslösung/Abtastung</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="219"/>
+        <location filename="mainwindow.cpp" line="237"/>
         <source>Start</source>
-        <translation type="unfinished">Start</translation>
+        <translation>Start</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="230"/>
+        <location filename="mainwindow.cpp" line="248"/>
         <source>Stop</source>
-        <translation type="unfinished">Stopp</translation>
+        <translation>Stopp</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="239"/>
+        <location filename="mainwindow.cpp" line="257"/>
         <source>Function</source>
-        <translation type="unfinished">Funktion</translation>
+        <translation>Funktion</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="243"/>
+        <location filename="mainwindow.cpp" line="261"/>
         <source>Integration Time</source>
-        <translation type="unfinished">Integrationszeit</translation>
+        <translation>Integrationszeit</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="247"/>
+        <location filename="mainwindow.cpp" line="265"/>
         <source>Autozero</source>
-        <translation type="unfinished">Nullsetzung</translation>
+        <translation>Nullsetzung</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="251"/>
+        <location filename="mainwindow.cpp" line="269"/>
         <source>Trigger Source</source>
-        <translation type="unfinished">Auslöserquelle</translation>
+        <translation>Auslöserquelle</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="255"/>
+        <location filename="mainwindow.cpp" line="273"/>
         <source>Samples</source>
-        <translation type="unfinished">Abtastwerte</translation>
-    </message>
-    <message>
-        <location filename="mainwindow.cpp" line="260"/>
-        <source>Select</source>
-        <translation type="unfinished">Auswahl</translation>
-    </message>
-    <message>
-        <location filename="mainwindow.cpp" line="263"/>
-        <source>Clear</source>
-        <translation type="unfinished">Löschen</translation>
-    </message>
-    <message>
-        <location filename="mainwindow.cpp" line="283"/>
-        <source>Serial Port</source>
-        <translation type="unfinished">Serieller Port</translation>
+        <translation>Abtastwerte</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="286"/>
+        <source>Select</source>
+        <translation>Auswahl</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="291"/>
+        <source>Clear</source>
+        <translation>Löschen</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="311"/>
+        <source>Serial Port</source>
+        <translation>Serieller Port</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="314"/>
         <source>DMM Port</source>
-        <translation type="unfinished">DMM Port</translation>
+        <translation>DMM Port</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="289"/>
+        <location filename="mainwindow.cpp" line="317"/>
         <source>Baud Rate</source>
-        <translation type="unfinished">Baud-Rate</translation>
+        <translation>Baud-Rate</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="294"/>
+        <location filename="mainwindow.cpp" line="322"/>
         <source>Flow Control</source>
-        <translation type="unfinished">Flusssteuerung</translation>
+        <translation>Flusssteuerung</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="299"/>
+        <location filename="mainwindow.cpp" line="327"/>
         <source>Parity</source>
-        <translation type="unfinished">Parität</translation>
+        <translation>Parität</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="304"/>
+        <location filename="mainwindow.cpp" line="332"/>
         <source>Data Bits</source>
-        <translation type="unfinished">Datenbits</translation>
+        <translation>Datenbits</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="309"/>
+        <location filename="mainwindow.cpp" line="337"/>
         <source>Stop Bits</source>
-        <translation type="unfinished">Stoppbits</translation>
+        <translation>Stoppbits</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="416"/>
+        <location filename="mainwindow.cpp" line="444"/>
         <source>Application to open CSV</source>
-        <translation type="unfinished">Anwendung zum CSV öffnen</translation>
+        <translation>Anwendung zum CSV öffnen</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="429"/>
+        <location filename="mainwindow.cpp" line="457"/>
         <source>Excel Template</source>
-        <translation type="unfinished">Excel-Vorlage</translation>
+        <translation>Excel-Vorlage</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="439"/>
+        <location filename="mainwindow.cpp" line="467"/>
         <source>About</source>
         <oldsource>About </oldsource>
-        <translation type="unfinished">Über</translation>
+        <translation>Über</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="441"/>
-        <source>&lt;p&gt;Copyright &amp;copy; 2011-2012 Sebastian Riemer. All rights reserved.&lt;p&gt;You are NOT ALLOWED to use this tool UNCOUPLED FROM A PATENT LICENSE from Dr. Udo Braatz AND ITS PURPOSE. Please read the EULA.&lt;p&gt;</source>
-        <oldsource>&lt;p&gt;Copyright &amp;copy; 2011-2012 Sebastian Riemer&lt;p&gt;You are NOT ALLOWED to use this tool UNCOUPLED FROM A PATENT LICENSE from Dr. Udo Braatz AND ITS PURPOSE. Please read the EULA.&lt;p&gt;</oldsource>
-        <translation type="unfinished">&lt;p&gt;Copyright &amp;copy; 2011-2012 Sebastian Riemer. Alle Rechte vorbehalten.&lt;p&gt;Es ist Ihnen NICHT GESTATTET diese Anwendung LOSGELÖST VON EINER PATENT-LIZENZ von Dr. Udo Braatz UND DESSEN ZWECK zu verwenden. Bitte lesen Sie den Endbenutzer-Lizenzvertrag.&lt;p&gt;</translation>
+        <location filename="mainwindow.cpp" line="469"/>
+        <source>&lt;p&gt;Copyright &amp;copy; 2011-2014 Sebastian Riemer &amp;lt;sebastian.riemer@gmx.de&amp;gt;. All rights reserved.&lt;p&gt;License: GNU General Public License Version 3&lt;p&gt;This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.&lt;p&gt;</source>
+        <translation>&lt;p&gt;Copyright &amp;copy; 2011-2014 Sebastian Riemer &amp;lt;sebastian.riemer@gmx.de&amp;gt;. Alle Rechte vorbehalten.&lt;p&gt;Lizenz: GNU General Public License Version 3&lt;p&gt;Dieses Programm wird in der Hoffnung verbreitet, dass es nützlich sein wird, jedoch OHNE JEGLICHE GARANTIE; sogar ohne die implizierte Garantie der allgemeinen GEBRAUCHSTAUGLICHKEIT oder der TAUGLICHKEIT FÜR EINEN BESTIMMTEN ZWECK. Lesen Sie die GNU General Public License für weitere  Details. Nur der englische Originaltext ist rechtskräftig.&lt;p&gt;</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="447"/>
+        <location filename="mainwindow.cpp" line="478"/>
         <source> is a small application that requests DC voltage values from a Tektronix 4050 DMM, calculates the sample interval and exports this data to CSV or Microsoft Excel in an NI LabVIEW SignalExpress compatible format.</source>
-        <translation type="unfinished"> ist eine kleine Anwendung, die Gleichspannungswerte von einem Tektronix 4050 DMM abfragt, das Abtastintervall berechnet und diese Daten nach CSV oder Microsoft Excel in einem NI LabVIEW SignalExpress kompatiblen Format exportiert.</translation>
+        <translation> ist eine kleine Anwendung, die Gleichspannungswerte von einem Tektronix 4050 DMM abfragt, das Abtastintervall berechnet und diese Daten nach CSV oder Microsoft Excel in einem NI LabVIEW SignalExpress kompatiblen Format exportiert.</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="497"/>
+        <location filename="mainwindow.cpp" line="528"/>
         <source>Choose application to open CSV</source>
-        <translation type="unfinished">Wähle die Anwendung zum CSV öffnen</translation>
+        <translation>Wähle die Anwendung zum CSV öffnen</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="521"/>
+        <location filename="mainwindow.cpp" line="552"/>
         <source>Choose template file to open</source>
-        <translation type="unfinished">Wähle die Anwendung zum Vorlagedatei öffnen</translation>
+        <translation>Wähle die Anwendung zum Vorlagedatei öffnen</translation>
     </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="configxml.cpp" line="29"/>
+        <location filename="configxml.cpp" line="42"/>
         <source>Not a config file</source>
-        <translation type="unfinished">Konfigurationsdatei ungültig</translation>
+        <translation>Konfigurationsdatei ungültig</translation>
     </message>
 </context>
 <context>
     <name>Settings</name>
     <message>
-        <location filename="settings.cpp" line="16"/>
-        <location filename="settings.cpp" line="19"/>
+        <location filename="settings.cpp" line="27"/>
+        <location filename="settings.cpp" line="30"/>
         <source>None</source>
-        <translation type="unfinished">Keine</translation>
+        <translation>Keine</translation>
     </message>
     <message>
-        <location filename="settings.cpp" line="19"/>
+        <location filename="settings.cpp" line="30"/>
         <source>Odd</source>
-        <translation type="unfinished">Ungerade</translation>
+        <translation>Ungerade</translation>
     </message>
     <message>
-        <location filename="settings.cpp" line="19"/>
+        <location filename="settings.cpp" line="30"/>
         <source>Even</source>
-        <translation type="unfinished">Gerade</translation>
+        <translation>Gerade</translation>
     </message>
     <message>
-        <location filename="settings.cpp" line="31"/>
+        <location filename="settings.cpp" line="41"/>
         <source>DC Volts</source>
-        <translation type="unfinished">DC Spannung</translation>
+        <translation>DC Spannung</translation>
     </message>
     <message>
-        <location filename="settings.cpp" line="41"/>
+        <location filename="settings.cpp" line="51"/>
         <source>Off</source>
-        <translation type="unfinished">Aus</translation>
+        <translation>Aus</translation>
     </message>
     <message>
-        <location filename="settings.cpp" line="41"/>
+        <location filename="settings.cpp" line="51"/>
         <source>On</source>
-        <translation type="unfinished">An</translation>
+        <translation>An</translation>
     </message>
     <message>
-        <location filename="settings.cpp" line="41"/>
+        <location filename="settings.cpp" line="51"/>
         <source>Once</source>
-        <translation type="unfinished">Einmal</translation>
+        <translation>Einmal</translation>
     </message>
     <message>
-        <location filename="settings.cpp" line="44"/>
+        <location filename="settings.cpp" line="54"/>
         <source>Immediate</source>
-        <translation type="unfinished">Direkt</translation>
+        <translation>Direkt</translation>
     </message>
     <message>
-        <location filename="settings.cpp" line="44"/>
+        <location filename="settings.cpp" line="54"/>
         <source>External</source>
-        <translation type="unfinished">Extern</translation>
+        <translation>Extern</translation>
     </message>
 </context>
 </TS>
