@@ -466,12 +466,13 @@ void MainWindow::displayAbout()
 {
     QMessageBox::about(this, tr("About").append(" " PROG_NAME),
            QString("<h2>" PROG_NAME " " PROG_VERSION "</h2>").append(
-           tr("<p>Copyright &copy; 2011..2014 by Sebastian Riemer."
+           tr("<p>Copyright &copy; 2011-2014 Sebastian Riemer "
+              "&lt;sebastian.riemer@gmx.de&gt;. All rights reserved."
               "<p>License: GNU General Public License Version 3"
               "<p>This program is distributed in the hope that it "
               "will be useful, but WITHOUT ANY WARRANTY; without "
               "even the implied warranty of MERCHANTABILITY or "
-              "FITNESS FOR A PARTICULAR PURPOSE.  See the GNU "
+              "FITNESS FOR A PARTICULAR PURPOSE. See the GNU "
               "General Public License for more details."
               "<p>").append(PROG_NAME).append(
            tr(" is a small application that "
