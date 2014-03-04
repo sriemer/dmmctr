@@ -75,6 +75,7 @@ MainWindow::MainWindow()
     exportSelButton   = new QPushButton;
     exportClrButton   = new QPushButton;
 
+    sets     = new Settings();
     cfg      = new Config();
     ConfigXml cfgXml(cfg);
     cfgXml.readConfigFile(CFG_FILE_DEFAULT);
@@ -101,7 +102,7 @@ void MainWindow::initThreads()
     connect(portCtr, SIGNAL(sendPortsDetected()), this, SLOT(portsDetected()));
     portCtr->start();
 
-    dmmCtr = new DMMControl(portCtr);
+    dmmCtr = new DMMControl(portCtr, sets, cfg);
     connect(portCtr, SIGNAL(sendPortsReady()), dmmCtr, SLOT(setReady()));
     connect(dmmCtr, SIGNAL(sendSetTimeout()), this, SLOT(setTimeout()));
     connect(dmmCtr, SIGNAL(sendSetError()), this, SLOT(setError()));
@@ -235,7 +236,6 @@ void MainWindow::initControls()
     QIcon   *iconClear;
     QPixmap *pixmapSelect;
     QPixmap *pixmapClear;
-    Settings sets;
 
     initPortControls();
     startButton->setText(tr("Start"));
@@ -259,19 +259,19 @@ void MainWindow::initControls()
     stopButton->setStyleSheet("color: red");
 
     measFunctLbl->setText(tr("Function"));
-    measFunct->addItems(sets.getMeasFunctions());
+    measFunct->addItems(sets->measFunctions);
     measFunct->setCurrentIndex(cfg->getID(FUNCT_ID));
 
     measIntegrTimeLbl->setText(tr("Integration Time"));
-    measIntegrTime->addItems(sets.getMeasIntegrTimes());
+    measIntegrTime->addItems(sets->measIntegrTimes);
     measIntegrTime->setCurrentIndex(cfg->getID(INTEGR_ID));
 
     measAutoZeroLbl->setText(tr("Autozero"));
-    measAutoZero->addItems(sets.getMeasAutoZero());
+    measAutoZero->addItems(sets->measAutoZero);
     measAutoZero->setCurrentIndex(cfg->getID(AUTOZ_ID));
 
     trigSourceLbl->setText(tr("Trigger Source"));
-    trigSource->addItems(sets.getTrigSources());
+    trigSource->addItems(sets->trigSources);
     trigSource->setCurrentIndex(cfg->getID(TRIG_SRC_ID));
 
     trigSamplesLbl->setText(tr("Samples"));
@@ -280,7 +280,7 @@ void MainWindow::initControls()
     trigSamples->setMaximum(5000);
 
     trigRateLbl->setText(tr("Trigger Rate"));
-    trigRate->addItems(sets.getTrigRates());
+    trigRate->addItems(sets->trigRates);
     trigRate->setCurrentIndex(cfg->getID(TRIG_RATE_ID));
 
     pixmapSelect = new QPixmap(":/app/images/folder2.svg", "SVG");
@@ -314,8 +314,6 @@ void MainWindow::initControls()
 
 void MainWindow::initPortControls()
 {
-    Settings sets;
-
     portGroup->setTitle(tr("Serial Port"));
     this->setStyleSheet("QGroupBox { font: bold }");
 
@@ -324,27 +322,27 @@ void MainWindow::initPortControls()
 
     baudLabel->setText(tr("Baud Rate"));
     baudLabel->setAlignment(Qt::AlignBottom);
-    baudComboBox->addItems(sets.getBaudRates());
+    baudComboBox->addItems(sets->baudRates);
     baudComboBox->setCurrentIndex(cfg->getID(BAUD_ID));
 
     flowLabel->setText(tr("Flow Control"));
     flowLabel->setAlignment(Qt::AlignBottom);
-    flowComboBox->addItems(sets.getFlowCtrs());
+    flowComboBox->addItems(sets->flowCtrs);
     flowComboBox->setCurrentIndex(cfg->getID(FLOW_ID));
 
     parityLabel->setText(tr("Parity"));
     parityLabel->setAlignment(Qt::AlignBottom);
-    parityComboBox->addItems(sets.getParities());
+    parityComboBox->addItems(sets->parities);
     parityComboBox->setCurrentIndex(cfg->getID(PARITY_ID));
 
     dataBitsLabel->setText(tr("Data Bits"));
     dataBitsLabel->setAlignment(Qt::AlignBottom);
-    dataBitsComboBox->addItems(sets.getDataBits());
+    dataBitsComboBox->addItems(sets->dataBits);
     dataBitsComboBox->setCurrentIndex(cfg->getID(DATA_BITS_ID));
 
     stopBitsLabel->setText(tr("Stop Bits"));
     stopBitsLabel->setAlignment(Qt::AlignBottom);
-    stopBitsComboBox->addItems(sets.getStopBits());
+    stopBitsComboBox->addItems(sets->stopBits);
     stopBitsComboBox->setCurrentIndex(cfg->getID(STOP_BITS_ID));
 }
 

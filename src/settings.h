@@ -23,31 +23,14 @@ class Settings : QObject
 {
     Q_OBJECT
 
-public:
+friend class MainWindow;
+friend class SerialPortCtr;
+friend class DMMControl;
+
+protected:
     Settings();
-    QStringList  getBaudRates  (void);
-    BaudRateType getBaudID     (int idx);
-    QStringList  getFlowCtrs   (void);
-    FlowType     getFlowID     (int idx);
-    QStringList  getParities   (void);
-    ParityType   getParityID   (int idx);
-    QStringList  getDataBits   (void);
-    DataBitsType getDataBitsID (int idx);
-    QStringList  getStopBits   (void);
-    StopBitsType getStopBitsID (int idx);
 
-    QStringList  getMeasFunctions  (void);
-    QString      getMeasFunctCmd   (int idx);
-    QStringList  getMeasIntegrTimes(void);
-    QString      getMeasIntegrTime (int idx);
-    QStringList  getMeasAutoZero   (void);
-    QString      getMeasAutoZero   (int idx);
-    QStringList  getTrigSources    (void);
-    QString      getTrigSource     (int idx);
-    QStringList  getTrigRates      (void);
-    QString      getTrigRate       (int idx);
-
-private:
+    // Port Settings
     QStringList baudRates;
     QVector<BaudRateType> baudIDs;
     QStringList flowCtrs;
@@ -58,6 +41,7 @@ private:
     QVector<DataBitsType> dataBitsIDs;
     QStringList stopBits;
     QVector<StopBitsType> stopBitsIDs;
+    // DMM Settings
     QStringList measFunctions;
     QStringList measFunctCmds;
     QStringList measIntegrTimes;
@@ -68,6 +52,58 @@ private:
     QStringList trigSources2;
     QStringList trigRates;
     QStringList trigRates2;
+
+    // Port Settings
+    inline BaudRateType getBaudID(int idx)
+    {
+        return baudIDs.at(idx);
+    }
+
+    inline FlowType getFlowID(int idx)
+    {
+        return flowIDs.at(idx);
+    }
+
+    inline ParityType getParityID(int idx)
+    {
+        return parityIDs.at(idx);
+    }
+
+    inline DataBitsType getDataBitsID(int idx)
+    {
+        return dataBitsIDs.at(idx);
+    }
+
+    inline StopBitsType getStopBitsID(int idx)
+    {
+        return stopBitsIDs.at(idx);
+    }
+
+    // DMM Settings
+    inline QString getMeasFunctCmd(int idx)
+    {
+        return measFunctCmds.at(idx);
+    }
+
+    inline QString getMeasIntegrTime(int idx)
+    {
+        return measIntegrTimes2.at(idx);
+    }
+
+    inline QString getMeasAutoZero(int idx)
+    {
+        return measAutoZero2.at(idx);
+    }
+
+    inline QString getTrigSource(int idx)
+    {
+        return trigSources2.at(idx);
+    }
+
+    inline QString getTrigRate(int idx)
+    {
+        return trigRates2.at(idx);
+    }
 };
 
 #endif

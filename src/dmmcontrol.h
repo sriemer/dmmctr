@@ -17,6 +17,7 @@
 #include <QThread>
 #include <qextserialport.h>
 
+#include "settings.h"
 #include "config.h"
 #include "serialportctr.h"
 
@@ -32,10 +33,9 @@ class DMMControl : public QThread
     Q_OBJECT
 
 public:
-    DMMControl(SerialPortCtr *portControl);
-    DMMControl(SerialPortCtr *portControl, Config *cfg);
+    DMMControl(SerialPortCtr *portControl, Settings *settings, Config *config);
     ~DMMControl();
-    void setConfig(Config *cfg);
+    void setConfig(Config *config);
     void run();
     bool isReady();
 
@@ -56,7 +56,8 @@ public slots:
 private:
     QextSerialPort *serPort;
     SerialPortCtr  *portCtr;
-    Config  *config;
+    Settings *sets;
+    Config   *cfg;
     QString message;
     int     timeout;
     bool    stopRequested;

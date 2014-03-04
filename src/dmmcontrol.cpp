@@ -31,24 +31,13 @@
 #define DMM_OPC_EXP   "1"
 
 
-DMMControl::DMMControl(SerialPortCtr *portControl, Config *cfg)
+DMMControl::DMMControl(SerialPortCtr *portControl, Settings *settings, Config *config)
 {
     qDebug() << "DMMControl created";
     serPort = NULL;
     portCtr = portControl;
-    config = cfg;
-    stopRequested = false;
-    ready = false;
-    timeout = RD_DEF_TIMEOUT;
-
-    sampleCount = 0;
-}
-
-DMMControl::DMMControl(SerialPortCtr *portControl)
-{
-    qDebug() << "DMMControl created";
-    serPort = NULL;
-    portCtr = portControl;
+    sets = settings;
+    cfg = config;
     stopRequested = false;
     ready = false;
     timeout = RD_DEF_TIMEOUT;
@@ -61,9 +50,9 @@ DMMControl::~DMMControl()
     stopDMMCtr();
 }
 
-void DMMControl::setConfig(Config *cfg)
+void DMMControl::setConfig(Config *config)
 {
-    config = cfg;
+    cfg = config;
 }
 
 void DMMControl::run()
@@ -75,7 +64,7 @@ void DMMControl::run()
         stopRequested = false;
         while (!ready)
             sleep(1);
-        serPort = portCtr->openPort(config);
+        serPort = portCtr->openPort(sets, cfg);
         emit sendStarted();
         if (serPort != NULL) {
             error = initDMM();
@@ -109,7 +98,6 @@ int DMMControl::initDMM(void)
 {
     int error = 0;
     QString expected;
-    Settings sets;
 
     // clear DMM buff and set DMM into remote mode
     if (!error && !stopRequested) {
@@ -154,7 +142,7 @@ int DMMControl::initDMM(void)
     // set auto zero
     if (!error && !stopRequested) {
         message = ":ZERO:AUTO ";
-        message.append(sets.getMeasAutoZero(config->getID(AUTOZ_ID)));
+        message.append(sets->getMeasAutoZero(cfg->getID(AUTOZ_ID)));
         message.append(";\n" DMM_SYS_ERR);
         expected = DMM_SYS_EXP;
         error = sendAndReadBack(&expected);
@@ -162,18 +150,18 @@ int DMMControl::initDMM(void)
 
     // set DMM function
     if (!error && !stopRequested) {
-        message = sets.getMeasFunctCmd(config->getID(FUNCT_ID));
+        message = sets->getMeasFunctCmd(cfg->getID(FUNCT_ID));
         message.append(";\n" DMM_SYS_ERR);
         expected = DMM_SYS_EXP;
         error = sendAndReadBack(&expected);
     }
 
     // set DC volts intgration time
-    if (config->getID(FUNCT_ID) == 0) {  //TODO compare with enum
+    if (cfg->getID(FUNCT_ID) == 0) {  //TODO compare with enum
        if (!error && !stopRequested) {
            message = "VOLT:DC:NPLC ";
-           message.append(sets.getMeasIntegrTime(
-                          config->getID(INTEGR_ID)));
+           message.append(sets->getMeasIntegrTime(
+                          cfg->getID(INTEGR_ID)));
            message.append(";\n" DMM_SYS_ERR);
            expected = DMM_SYS_EXP;
            error = sendAndReadBack(&expected);
@@ -183,7 +171,7 @@ int DMMControl::initDMM(void)
     // set trigger config
     if (!error && !stopRequested) {
         message = ":TRIG:DEL:AUTO ON;:TRIG:SOUR ";
-        message.append(sets.getTrigSource(config->getID(TRIG_SRC_ID)));
+        message.append(sets->getTrigSource(cfg->getID(TRIG_SRC_ID)));
         message.append(";\n" DMM_SYS_ERR);
         expected = DMM_SYS_EXP;
         error = sendAndReadBack(&expected);
@@ -201,7 +189,7 @@ int DMMControl::retrieveDMMVal(int error)
     QString duration;
     QStringList values;
 
-    samples.setNum(config->getIntVal(SAMP_ID));
+    samples.setNum(cfg->getIntVal(SAMP_ID));
     startTime = QTime::currentTime();
     time = QDateTime::currentMSecsSinceEpoch();  // Qt 4.7 needed
 
@@ -225,7 +213,7 @@ int DMMControl::retrieveDMMVal(int error)
         }
 
         if (!error) {
-            sampleCount += config->getIntVal(SAMP_ID);
+            sampleCount += cfg->getIntVal(SAMP_ID);
 
             message = ":STAT:QUES:EVEN?\n";
             expRegExp.setPattern("^[+-]");

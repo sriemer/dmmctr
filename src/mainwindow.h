@@ -15,6 +15,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "settings.h"
 #include "config.h"
 #include "serialportctr.h"
 #include "dmmcontrol.h"
@@ -106,6 +107,7 @@ private:
     QPushButton  *exportClrButton;
 
     SerialPortCtr *portCtr;
+    Settings      *sets;
     Config        *cfg;
     DMMControl    *dmmCtr;
     bool          started;
