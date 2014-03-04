@@ -27,6 +27,7 @@ Report::Report()
 
 void Report::writeToCsv(QStringList results, const QString csvApp = "")
 {
+    int     ret;
     QFile   outputFile;
     int     samples  = results.size() - NUM_EXTRA_VALS;
     int     valStart;
@@ -79,7 +80,8 @@ void Report::writeToCsv(QStringList results, const QString csvApp = "")
 
     tmpStr = csvApp;
     tmpStr.append(" " OUTPUT_CSV);
-    system(tmpStr.toAscii());
+    ret = system(tmpStr.toAscii());
+    qDebug() << "system(" << tmpStr.toAscii() << ") returned " << ret << ".";
 }
 
 #ifdef Q_OS_WIN
