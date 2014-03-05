@@ -20,7 +20,6 @@
 #define RD_BUFF_SIZE    1024
 #define RD_POLL_RATE       5  // ms
 #define RD_INI_TIMEOUT  5000  // ms
-#define RD_DEF_TIMEOUT  2000  // ms
 
 #define DMM_SYS_ERR   ":SYST:ERR?\n"
 #define DMM_IDN       "*IDN?\n"      // Identification
@@ -40,7 +39,6 @@ DMMControl::DMMControl(SerialPortCtr *portControl, Settings *settings, Config *c
     cfg = config;
     stopRequested = false;
     ready = false;
-    timeout = RD_DEF_TIMEOUT;
 
     sampleCount = 0;
 }
@@ -96,88 +94,85 @@ void DMMControl::stopDMMCtr()
 
 int DMMControl::initDMM(void)
 {
-    int error = 0;
+    int ret = 0;
     QString expected;
 
+    if (stopRequested)
+        goto out;
+
     // clear DMM buff and set DMM into remote mode
-    if (!error && !stopRequested) {
-        message  = "*CLS\nSYST:REM\n" DMM_OPC;
-        expected = DMM_OPC_EXP;
-        timeout  = RD_INI_TIMEOUT;
-        error = sendAndReadBack(&expected);
-        timeout  = RD_DEF_TIMEOUT;
-    }
+    message  = "*CLS\nSYST:REM\n" DMM_OPC;
+    expected = DMM_OPC_EXP;
+    ret = sendAndReadBack(&expected, RD_INI_TIMEOUT);
+    if (ret || stopRequested)
+        goto out;
 
     // get DMM identification
-    if (!error && !stopRequested) {
-        message  = DMM_IDN;
-        expected = DMM_IDN_EXP;
-        error = sendAndReadBack(&expected);
-    }
+    message  = DMM_IDN;
+    expected = DMM_IDN_EXP;
+    ret = sendAndReadBack(&expected);
+    if (ret || stopRequested)
+        goto out;
 
     // reset DMM and set status registers
-    if (!error && !stopRequested) {
-        message = "*RST;\n*ESE 60;*SRE 56;*CLS;"
-                  ":STAT:QUES:ENAB 32767\n" DMM_SYS_ERR;
-        expected = DMM_SYS_EXP;
-        timeout  = RD_INI_TIMEOUT;
-        error = sendAndReadBack(&expected);
-        timeout  = RD_DEF_TIMEOUT;
-    }
+    message = "*RST;\n*ESE 60;*SRE 56;*CLS;"
+              ":STAT:QUES:ENAB 32767\n" DMM_SYS_ERR;
+    expected = DMM_SYS_EXP;
+    ret = sendAndReadBack(&expected, RD_INI_TIMEOUT);
+    if (ret || stopRequested)
+        goto out;
 
     // check status again (ask Tektronix why)
-    if (!error && !stopRequested) {
-        message  = DMM_SYS_ERR;
-        expected = DMM_SYS_EXP;
-        error = sendAndReadBack(&expected);
-    }
+    message  = DMM_SYS_ERR;
+    expected = DMM_SYS_EXP;
+    ret = sendAndReadBack(&expected);
+    if (ret || stopRequested)
+        goto out;
 
     // deactivate beeper
-    if (!error && !stopRequested) {
-        message = "SYSTEM:ERROR:BEEPER 0\n" DMM_IDN;
-        expected = DMM_IDN_EXP;
-        error = sendAndReadBack(&expected);
-    }
+    message = "SYSTEM:ERROR:BEEPER 0\n" DMM_IDN;
+    expected = DMM_IDN_EXP;
+    ret = sendAndReadBack(&expected);
+    if (ret || stopRequested)
+        goto out;
 
     // set auto zero
-    if (!error && !stopRequested) {
-        message = ":ZERO:AUTO ";
-        message.append(sets->getMeasAutoZero(cfg->getID(AUTOZ_ID)));
-        message.append(";\n" DMM_SYS_ERR);
-        expected = DMM_SYS_EXP;
-        error = sendAndReadBack(&expected);
-    }
+    message = ":ZERO:AUTO ";
+    message.append(sets->getMeasAutoZero(cfg->getID(AUTOZ_ID)));
+    message.append(";\n" DMM_SYS_ERR);
+    expected = DMM_SYS_EXP;
+    ret = sendAndReadBack(&expected);
+    if (ret || stopRequested)
+        goto out;
 
     // set DMM function
-    if (!error && !stopRequested) {
-        message = sets->getMeasFunctCmd(cfg->getID(FUNCT_ID));
-        message.append(";\n" DMM_SYS_ERR);
-        expected = DMM_SYS_EXP;
-        error = sendAndReadBack(&expected);
-    }
+    message = sets->getMeasFunctCmd(cfg->getID(FUNCT_ID));
+    message.append(";\n" DMM_SYS_ERR);
+    expected = DMM_SYS_EXP;
+    ret = sendAndReadBack(&expected);
+    if (ret || stopRequested)
+        goto out;
 
     // set DC volts intgration time
     if (cfg->getID(FUNCT_ID) == 0) {  //TODO compare with enum
-       if (!error && !stopRequested) {
-           message = "VOLT:DC:NPLC ";
-           message.append(sets->getMeasIntegrTime(
-                          cfg->getID(INTEGR_ID)));
-           message.append(";\n" DMM_SYS_ERR);
-           expected = DMM_SYS_EXP;
-           error = sendAndReadBack(&expected);
-       }
+       message = "VOLT:DC:NPLC ";
+       message.append(sets->getMeasIntegrTime(
+                      cfg->getID(INTEGR_ID)));
+       message.append(";\n" DMM_SYS_ERR);
+       expected = DMM_SYS_EXP;
+       ret = sendAndReadBack(&expected);
+       if (ret || stopRequested)
+           goto out;
     }
 
     // set trigger config
-    if (!error && !stopRequested) {
-        message = ":TRIG:DEL:AUTO ON;:TRIG:SOUR ";
-        message.append(sets->getTrigSource(cfg->getID(TRIG_SRC_ID)));
-        message.append(";\n" DMM_SYS_ERR);
-        expected = DMM_SYS_EXP;
-        error = sendAndReadBack(&expected);
-    }
-
-    return error;
+    message = ":TRIG:DEL:AUTO ON;:TRIG:SOUR ";
+    message.append(sets->getTrigSource(cfg->getID(TRIG_SRC_ID)));
+    message.append(";\n" DMM_SYS_ERR);
+    expected = DMM_SYS_EXP;
+    ret = sendAndReadBack(&expected);
+out:
+    return ret;
 }
 
 int DMMControl::retrieveDMMVal(int error)
@@ -207,7 +202,6 @@ int DMMControl::retrieveDMMVal(int error)
             // fetch current value
             message = "INIT;\nFETC?\n";
             expRegExp.setPattern("^[+-]");
-            timeout  = RD_DEF_TIMEOUT;
             error = sendAndReadBack(&expRegExp);
             values.append(message);
         }
@@ -243,7 +237,7 @@ int DMMControl::retrieveDMMVal(int error)
 }
 
 template <typename T>
-int DMMControl::sendAndReadBack(T *expected)
+int DMMControl::sendAndReadBack(T *expected, int timeout)
 {
     int error;
 
@@ -251,7 +245,7 @@ int DMMControl::sendAndReadBack(T *expected)
     qDebug() << message;
 
     message.clear();
-    error = readPort(expected);
+    error = readPort(expected, timeout);
     if (error == ERR_TIMEOUT) {
         emit sendSetTimeout();
     } else if (error != ERR_NONE) {
@@ -264,7 +258,7 @@ int DMMControl::sendAndReadBack(T *expected)
 
 // QString and QRegExp are used
 template <typename T>
-int DMMControl::readPort(T *expected)
+int DMMControl::readPort(T *expected, int timeout)
 {
     char buff[RD_BUFF_SIZE];
     int  numBytes;

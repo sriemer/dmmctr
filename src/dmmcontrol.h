@@ -21,6 +21,8 @@
 #include "config.h"
 #include "serialportctr.h"
 
+#define RD_DEF_TIMEOUT  2000  // ms
+
 enum DMMErrorType {
     ERR_NONE,
     ERR_TIMEOUT,
@@ -59,7 +61,6 @@ private:
     Settings *sets;
     Config   *cfg;
     QString message;
-    int     timeout;
     bool    stopRequested;
     bool    ready;
 
@@ -70,9 +71,9 @@ private:
     int  initDMM    (void);
     int  retrieveDMMVal (int error);
     template <typename T>
-    int  sendAndReadBack (T *expected);
+    int  sendAndReadBack (T *expected, int timeout = RD_DEF_TIMEOUT);
     template <typename T>
-    int  readPort   (T *expected);
+    int  readPort   (T *expected, int timeout = RD_DEF_TIMEOUT);
 };
 
 #endif
