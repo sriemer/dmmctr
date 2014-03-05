@@ -26,22 +26,21 @@
 #ifdef Q_OS_WIN
     #define DEFAULT_CSV_APP "excel"
 #else
-    #define DEFAULT_CSV_APP "libreoffice -calc"
+    #define DEFAULT_CSV_APP "libreoffice --calc"
 #endif
 #define ERR_SIZE_MISMATCH "HAVN'T YOU FORGOTTEN SOMETHING IN THE CONFIG?"
 
 // Constructors
 Config::Config()
 {
-    configIDs = QVector<int>() << 0 << 3 << 0 << 0 << 1 << 0  // Port defaults
-                << 0 << 3 << 0 << 0 << 1 << 0  // DMM defaults
-                << 0;  // Export default
+    configIDs = QVector<int>(CFG_ID_SIZE, 0);
+    configIDs[BAUD_ID] = 3;
+    configIDs[DATA_BITS_ID] = 1;
+    configIDs[INTEGR_ID] = 3;
+    configIDs[SAMP_ID] = 1;
 
-    configStrings = QVector<QString>() << QString("") <<   // Export defaults
-                    QString(DEFAULT_CSV_APP) << QString("") << QString("");
-
-    if (configIDs.size() != CFG_ID_SIZE || configStrings.size() != CFG_STR_SIZE)
-        qDebug() << ERR_SIZE_MISMATCH;
+    configStrings = QVector<QString>(CFG_STR_SIZE, "");
+    configStrings[CSV_PATH_STR] = QString(DEFAULT_CSV_APP);
 }
 
 Config::Config(QVector<int> cfgIDs, QVector<QString> cfgStrings)
@@ -50,6 +49,7 @@ Config::Config(QVector<int> cfgIDs, QVector<QString> cfgStrings)
         configIDs = cfgIDs;
         configStrings = cfgStrings;
     } else {
+        Config();
         qDebug() << ERR_SIZE_MISMATCH;
     }
 }
