@@ -60,14 +60,16 @@ MainWindow::MainWindow()
     measIntegrTime     = new QComboBox;
     measAutoZeroLbl    = new QLabel;
     measAutoZero       = new QComboBox;
+    measRateLbl        = new QLabel;
+    measRate           = new QComboBox;
     trigWidget         = new QWidget;
     trigLayout         = new QGridLayout;
     trigSourceLbl      = new QLabel;
     trigSource         = new QComboBox;
     trigSamplesLbl     = new QLabel;
     trigSamples        = new QSpinBox;
-    trigRateLbl        = new QLabel;
-    trigRate           = new QComboBox;
+    genDispLbl         = new QLabel;
+    genDisp            = new QComboBox;
     exportLbl         = new QLabel;
     exportWidget      = new QWidget;
     exportLayout      = new QHBoxLayout;
@@ -197,6 +199,8 @@ void MainWindow::initLayout()
     measLayout->addWidget(measIntegrTime, 3, 0, Qt::AlignTop);
     measLayout->addWidget(measAutoZeroLbl, 4, 0, Qt::AlignBottom);
     measLayout->addWidget(measAutoZero, 5, 0, Qt::AlignTop);
+    measLayout->addWidget(measRateLbl, 0, 1, 1, 2, Qt::AlignBottom);
+    measLayout->addWidget(measRate, 1, 1, Qt::AlignTop);
     measWidget->setLayout(measLayout);
     dmmTabWidget->addTab(measWidget, tr("Measurement"));
 
@@ -204,8 +208,8 @@ void MainWindow::initLayout()
     trigLayout->addWidget(trigSource, 1, 0, Qt::AlignTop);
     trigLayout->addWidget(trigSamplesLbl, 2, 0, Qt::AlignBottom);
     trigLayout->addWidget(trigSamples, 3, 0, Qt::AlignTop);
-    trigLayout->addWidget(trigRateLbl, 4, 0, Qt::AlignBottom);
-    trigLayout->addWidget(trigRate, 5, 0, Qt::AlignTop);
+    trigLayout->addWidget(genDispLbl, 0, 1, 1, 2, Qt::AlignBottom);
+    trigLayout->addWidget(genDisp, 1, 1, Qt::AlignTop);
     trigWidget->setLayout(trigLayout);
     dmmTabWidget->addTab(trigWidget, tr("Trigger/Samples"));
 
@@ -270,6 +274,10 @@ void MainWindow::initControls()
     measAutoZero->addItems(sets->measAutoZero);
     measAutoZero->setCurrentIndex(cfg->getID(AUTOZ_ID));
 
+    measRateLbl->setText(tr("Rate"));
+    measRate->addItems(sets->measRates);
+    measRate->setCurrentIndex(cfg->getID(MEAS_RATE_ID));
+
     trigSourceLbl->setText(tr("Trigger Source"));
     trigSource->addItems(sets->trigSources);
     trigSource->setCurrentIndex(cfg->getID(TRIG_SRC_ID));
@@ -279,9 +287,9 @@ void MainWindow::initControls()
     trigSamples->setMinimum(1);
     trigSamples->setMaximum(5000);
 
-    trigRateLbl->setText(tr("Trigger Rate"));
-    trigRate->addItems(sets->trigRates);
-    trigRate->setCurrentIndex(cfg->getID(TRIG_RATE_ID));
+    genDispLbl->setText(tr("Display"));
+    genDisp->addItems(sets->genDisp);
+    genDisp->setCurrentIndex(cfg->getID(DISP_ID));
 
     pixmapSelect = new QPixmap(":/app/images/folder2.svg", "SVG");
     pixmapClear = new QPixmap(":/app/images/eraser.svg", "SVG");
@@ -505,8 +513,9 @@ void MainWindow::start()
         parityComboBox->currentIndex() << dataBitsComboBox->currentIndex() <<
         stopBitsComboBox->currentIndex() << measFunct->currentIndex() <<
         measIntegrTime->currentIndex() << measAutoZero->currentIndex() <<
-        trigSource->currentIndex() << trigSamples->value() <<
-        trigRate->currentIndex() << cfg->getID(EXPORT_ID));
+        measRate->currentIndex() << trigSource->currentIndex() <<
+        trigSamples->value() << genDisp->currentIndex() <<
+        cfg->getID(EXPORT_ID));
 
     dmmCtr->setConfig(cfg);
     emit timeoutIndicat->setOff();

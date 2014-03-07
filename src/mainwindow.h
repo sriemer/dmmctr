@@ -91,14 +91,16 @@ private:
     QComboBox    *measIntegrTime;
     QLabel       *measAutoZeroLbl;
     QComboBox    *measAutoZero;
+    QLabel       *measRateLbl;
+    QComboBox    *measRate;
     QWidget      *trigWidget;
     QGridLayout  *trigLayout;
     QLabel       *trigSourceLbl;
     QComboBox    *trigSource;
     QLabel       *trigSamplesLbl;
     QSpinBox     *trigSamples;
-    QLabel       *trigRateLbl;
-    QComboBox    *trigRate;
+    QLabel       *genDispLbl;
+    QComboBox    *genDisp;
     QLabel       *exportLbl;
     QWidget      *exportWidget;
     QHBoxLayout  *exportLayout;

@@ -43,15 +43,17 @@ protected:
     QVector<StopBitsType> stopBitsIDs;
     // DMM Settings
     QStringList measFunctions;
-    QStringList measFunctCmds;
+    QStringList _measFunctions;
     QStringList measIntegrTimes;
-    QStringList measIntegrTimes2;
+    QStringList _measIntegrTimes;
     QStringList measAutoZero;
-    QStringList measAutoZero2;
+    QStringList _measAutoZero;
+    QStringList measRates;
+    QStringList _measRates;
     QStringList trigSources;
-    QStringList trigSources2;
-    QStringList trigRates;
-    QStringList trigRates2;
+    QStringList _trigSources;
+    QStringList genDisp;
+    QStringList _genDisp;
 
     // Port Settings
     inline BaudRateType getBaudID(int idx)
@@ -82,27 +84,32 @@ protected:
     // DMM Settings
     inline QString getMeasFunctCmd(int idx)
     {
-        return measFunctCmds.at(idx);
+        return measFunctions.at(idx);
     }
 
     inline QString getMeasIntegrTime(int idx)
     {
-        return measIntegrTimes2.at(idx);
+        return _measIntegrTimes.at(idx);
     }
 
     inline QString getMeasAutoZero(int idx)
     {
-        return measAutoZero2.at(idx);
+        return _measAutoZero.at(idx);
     }
 
     inline QString getTrigSource(int idx)
     {
-        return trigSources2.at(idx);
+        return _trigSources.at(idx);
     }
 
-    inline QString getTrigRate(int idx)
+    inline QString getMeasRate(int idx)
     {
-        return trigRates2.at(idx);
+        return _measRates.at(idx);
+    }
+
+    inline QString getDisp(int idx)
+    {
+        return _genDisp.at(idx);
     }
 };
 

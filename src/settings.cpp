@@ -39,22 +39,25 @@ Settings::Settings()
 
     // Selectable DMM Settings
     measFunctions = QStringList() << tr("DC Volts");
-    measFunctCmds = QStringList() << "CONF:VOLT:DC";
+    _measFunctions = QStringList() << "CONF:VOLT:DC";
 
     measIntegrTimes = QStringList()
         << QString("0.02")
         << QString("0.2")
         << "1" << "10" << "100";
-    measIntegrTimes2 = QStringList() << "0.020000" << "0.200000" << "1.000000"
+    _measIntegrTimes = QStringList() << "0.020000" << "0.200000" << "1.000000"
         << "10.000000" << "100.000000";
 
     measAutoZero = QStringList() << tr("Off") << tr("On") << tr("Once");
-    measAutoZero2 = QStringList() << "OFF" << "ON" << "ONCE";
+    _measAutoZero = QStringList() << "OFF" << "ON" << "ONCE";
+
+    measRates = QStringList() << tr("Slow (2.5/s)") << tr("Medium (5/s)")
+        << tr("Fast (20/s)");
+    _measRates = QStringList() << "S" << "M" << "F";
 
     trigSources = QStringList() << tr("Immediate") << tr("External");
-    trigSources2 = QStringList() << "IMM" << "EXT";
+    _trigSources = QStringList() << "IMM" << "EXT";
 
-    trigRates = QStringList() << tr("Slow (2.5/s)") << tr("Medium (5/s)")
-        << tr("Fast (20/s)");
-    trigRates2 = QStringList() << "S" << "M" << "F";
+    genDisp = QStringList() << tr("Off") << tr("On");
+    _genDisp = QStringList() << "OFF" << "ON";
 }

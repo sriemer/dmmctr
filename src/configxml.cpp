@@ -167,8 +167,9 @@ void ConfigXml::writeEntries(QXmlStreamWriter *writer)
     QStringList valueNames = QStringList()     << QString("port") <<
         QString("baud")   << QString("flow")   << QString("parity") <<
         QString("data_b") << QString("stop_b") << QString("funct") <<
-        QString("integ")  << QString("autoz")  << QString("trigs") <<
-        QString("sampl")  << QString("trigr")  << QString("expor");
+        QString("integ")  << QString("autoz")  << QString("rate") <<
+        QString("trigs")  << QString("sampl")  << QString("disp") <<
+        QString("expor");
 
     writer->writeStartElement("entry");
     writer->writeAttribute("type", "int");
