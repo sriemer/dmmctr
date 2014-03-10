@@ -16,16 +16,14 @@
 #include <QDebug>
 #include "configxml.h"
 
-ConfigXml::ConfigXml(Config *cfg)
+ConfigXml::ConfigXml(Settings *settings)
 {
-    config = cfg;
+    sets = settings;
 }
 
 void ConfigXml::readConfigFile(const QString fileName)
 {
     QFile configFile(fileName);
-    int intIdx = 0;
-    int strIdx = 0;
 
     if (!configFile.open(QIODevice::ReadOnly)) {
         qDebug() << "Config file not found!";
@@ -37,7 +35,7 @@ void ConfigXml::readConfigFile(const QString fileName)
     while (!reader.atEnd()) {
         if (reader.isStartElement()) {
             if (reader.name() == "config") {
-                readConfigElement(&intIdx, &strIdx);
+                readConfigElement();
             } else {
                 reader.raiseError(QObject::tr("Not a config file"));
             }
@@ -53,7 +51,7 @@ void ConfigXml::readConfigFile(const QString fileName)
     }
 }
 
-void ConfigXml::readConfigElement(int *intIdx, int *strIdx)
+void ConfigXml::readConfigElement(void)
 {
     reader.readNext();
     while (!reader.atEnd()) {
@@ -64,7 +62,7 @@ void ConfigXml::readConfigElement(int *intIdx, int *strIdx)
 
         if (reader.isStartElement()) {
             if (reader.name() == "entry") {
-                readEntryElement(intIdx, strIdx);
+                readEntryElement();
             } else {
                 skipUnknownElement();
             }
@@ -74,7 +72,7 @@ void ConfigXml::readConfigElement(int *intIdx, int *strIdx)
     }
 }
 
-void ConfigXml::readEntryElement(int *intIdx, int *strIdx)
+void ConfigXml::readEntryElement(void)
 {
     QString type = reader.attributes().value("type").toString();
 
@@ -87,9 +85,9 @@ void ConfigXml::readEntryElement(int *intIdx, int *strIdx)
 
         if (reader.isStartElement()) {
             if (reader.name() == "entry") {
-                readEntryElement(intIdx, strIdx);
+                readEntryElement();
             } else if (reader.name() == "value") {
-                readValue(type, intIdx, strIdx);
+                readValue(type);
             } else {
                 skipUnknownElement();
             }
@@ -99,20 +97,18 @@ void ConfigXml::readEntryElement(int *intIdx, int *strIdx)
     }
 }
 
-void ConfigXml::readValue(const QString type, int *intIdx, int *strIdx)
+void ConfigXml::readValue(const QString type)
 {
+    QString name = reader.attributes().value("name").toString();
     QString value = reader.readElementText();
 
     if (reader.isEndElement())
         reader.readNext();
 
-    if (type == "int") {
-        config->setID((ConfigIDType) *intIdx, value.toInt());
-        (*intIdx)++;
-    } else if (type == "str") {
-        config->setStr((ConfigStrType) *strIdx, value);
-        (*strIdx)++;
-    }
+    if (type == "int")
+        sets->setCfgID(name, value.toInt());
+    else if (type == "str")
+        sets->setCfgStr(name, value);
 }
 
 void ConfigXml::skipUnknownElement()
@@ -162,37 +158,30 @@ bool ConfigXml::writeConfigFile(const QString fileName)
 
 void ConfigXml::writeEntries(QXmlStreamWriter *writer)
 {
-    int i = 0;
+    int i;
+    SetIDType id;
     QString tmpStr;
-    QStringList valueNames = QStringList()     << QString("port") <<
-        QString("baud")   << QString("flow")   << QString("parity") <<
-        QString("data_b") << QString("stop_b") << QString("funct") <<
-        QString("integ")  << QString("autoz")  << QString("rate") <<
-        QString("trigs")  << QString("sampl")  << QString("disp") <<
-        QString("expor");
 
-    writer->writeStartElement("entry");
-    writer->writeAttribute("type", "int");
-    for (i = 0; i < CFG_ID_SIZE; i++) {
-        tmpStr = QString("%1").arg(config->getID((ConfigIDType) i));
+    for (i = 0; i < SETTINGS_SIZE; i++) {
+        id = (SetIDType) i;
+        writer->writeStartElement("entry");
+        switch (sets->getCfgType(id)) {
+        case CFG_INT:
+        case CFG_ID:
+            writer->writeAttribute("type", "int");
+            tmpStr = QString("%1").arg(sets->getCfgID(id));
+            break;
+        case CFG_STRING:
+            writer->writeAttribute("type", "str");
+            tmpStr = sets->getCfgStr(id);
+            break;
+        default:
+            break;
+        }
         writer->writeStartElement("value");
-        writer->writeAttribute("name", valueNames.at(i));
+        writer->writeAttribute("name", sets->getName(id));
         writer->writeCharacters(tmpStr);
         writer->writeEndElement();
-    }
-    writer->writeEndElement();
-
-    valueNames = QStringList() << QString("csv_app_dir") <<
-        QString("csv_app_path") << QString("xls_dir") << QString("xls_path");
-
-    writer->writeStartElement("entry");
-    writer->writeAttribute("type", "str");
-    for (i = 0; i < CFG_STR_SIZE; i++) {
-        tmpStr = config->getStr((ConfigStrType) i);
-        writer->writeStartElement("value");
-        writer->writeAttribute("name", valueNames.at(i));
-        writer->writeCharacters(tmpStr);
         writer->writeEndElement();
     }
-    writer->writeEndElement();
 }

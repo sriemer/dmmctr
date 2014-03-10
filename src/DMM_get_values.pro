@@ -9,7 +9,6 @@ MOC_DIR = tmp
 UI_DIR = tmp
 HEADERS = mainwindow.h \
     dmmcontrol.h \
-    config.h \
     settings.h \
     ledindicator.h \
     report.h \
@@ -18,7 +17,6 @@ HEADERS = mainwindow.h \
 SOURCES = main.cpp \
     mainwindow.cpp \
     dmmcontrol.cpp \
-    config.cpp \
     settings.cpp \
     ledindicator.cpp \
     report.cpp \

@@ -124,29 +124,29 @@ int SerialPortCtr::filterPortsWin(int i)
     return removed;
 }
 
-QextSerialPort *SerialPortCtr::openPort(Settings *sets, Config *cfg)
+QextSerialPort *SerialPortCtr::openPort(Settings *sets)
 {
 #ifdef _TTY_WIN_
-    QString portStr = portList.at(cfg->getID(PORT_ID)).portName;
+    QString portStr = portList.at(sets->getCfgID(PORT_ID)).portName;
 #else
-    QString portStr = portList.at(cfg->getID(PORT_ID)).physName;
+    QString portStr = portList.at(sets->getCfgID(PORT_ID)).physName;
 #endif
     QextSerialPort *port = new QextSerialPort(portStr, QextSerialPort::Polling);
 
-    configurePort(port, sets, cfg);
+    configurePort(port, sets);
     if (!port->open(QIODevice::ReadWrite | QIODevice::Unbuffered))
         return NULL;
 
     return port;
 }
 
-void SerialPortCtr::configurePort(QextSerialPort *port, Settings *sets, Config *cfg)
+void SerialPortCtr::configurePort(QextSerialPort *port, Settings *sets)
 {
-    port->setBaudRate(sets->getBaudID(cfg->getID(BAUD_ID)));
-    port->setFlowControl(sets->getFlowID(cfg->getID(FLOW_ID)));
-    port->setParity  (sets->getParityID(cfg->getID(PARITY_ID)));
-    port->setDataBits(sets->getDataBitsID(cfg->getID(DATA_BITS_ID)));
-    port->setStopBits(sets->getStopBitsID(cfg->getID(STOP_BITS_ID)));
+    port->setBaudRate(sets->getBaudFromID(BAUD_ID));
+    port->setFlowControl(sets->getFlowFromID(FLOW_ID));
+    port->setParity  (sets->getParityFromID(PARITY_ID));
+    port->setDataBits(sets->getDataBitsFromID(DATA_BITS_ID));
+    port->setStopBits(sets->getStopBitsFromID(STOP_BITS_ID));
     port->setTimeout(500);
 }
 

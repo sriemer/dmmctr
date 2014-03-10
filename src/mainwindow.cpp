@@ -15,12 +15,13 @@
 
 #include "mainwindow.h"
 #include "settings.h"
-#include "config.h"
 #include "configxml.h"
 #include "serialportctr.h"
 #include "dmmcontrol.h"
 #include "report.h"
 
+#define PROG_NAME "DMM_get_values"
+#define PROG_VERSION "1.0.0"
 #define ICON_DEFAULT_SIZE 28  // px
 #define EXPORT_CSV 0
 #define EXPORT_XLS 1
@@ -78,8 +79,7 @@ MainWindow::MainWindow()
     exportClrButton   = new QPushButton;
 
     sets     = new Settings();
-    cfg      = new Config();
-    ConfigXml cfgXml(cfg);
+    ConfigXml cfgXml(sets);
     cfgXml.readConfigFile(CFG_FILE_DEFAULT);
 
     started  = false;
@@ -104,7 +104,7 @@ void MainWindow::initThreads()
     connect(portCtr, SIGNAL(sendPortsDetected()), this, SLOT(portsDetected()));
     portCtr->start();
 
-    dmmCtr = new DMMControl(portCtr, sets, cfg);
+    dmmCtr = new DMMControl(portCtr, sets);
     connect(portCtr, SIGNAL(sendPortsReady()), dmmCtr, SLOT(setReady()));
     connect(dmmCtr, SIGNAL(sendSetTimeout()), this, SLOT(setTimeout()));
     connect(dmmCtr, SIGNAL(sendSetError()), this, SLOT(setError()));
@@ -262,34 +262,19 @@ void MainWindow::initControls()
     stopButton->setFont(progCtrFont);
     stopButton->setStyleSheet("color: red");
 
-    measFunctLbl->setText(tr("Function"));
-    measFunct->addItems(sets->measFunctions);
-    measFunct->setCurrentIndex(cfg->getID(FUNCT_ID));
+    sets->initComboBox(FUNCT_ID, measFunctLbl, measFunct);
 
-    measIntegrTimeLbl->setText(tr("Integration Time"));
-    measIntegrTime->addItems(sets->measIntegrTimes);
-    measIntegrTime->setCurrentIndex(cfg->getID(INTEGR_ID));
+    sets->initComboBox(INTEGR_ID, measIntegrTimeLbl, measIntegrTime);
 
-    measAutoZeroLbl->setText(tr("Autozero"));
-    measAutoZero->addItems(sets->measAutoZero);
-    measAutoZero->setCurrentIndex(cfg->getID(AUTOZ_ID));
+    sets->initComboBox(AUTOZ_ID, measAutoZeroLbl, measAutoZero);
 
-    measRateLbl->setText(tr("Rate"));
-    measRate->addItems(sets->measRates);
-    measRate->setCurrentIndex(cfg->getID(MEAS_RATE_ID));
+    sets->initComboBox(MEAS_RATE_ID, measRateLbl, measRate);
 
-    trigSourceLbl->setText(tr("Trigger Source"));
-    trigSource->addItems(sets->trigSources);
-    trigSource->setCurrentIndex(cfg->getID(TRIG_SRC_ID));
+    sets->initComboBox(TRIG_SRC_ID, trigSourceLbl, trigSource);
 
-    trigSamplesLbl->setText(tr("Samples"));
-    trigSamples->setValue(cfg->getID(SAMP_ID));
-    trigSamples->setMinimum(1);
-    trigSamples->setMaximum(5000);
+    sets->initSpinBox(SAMP_ID, trigSamplesLbl, trigSamples);
 
-    genDispLbl->setText(tr("Display"));
-    genDisp->addItems(sets->genDisp);
-    genDisp->setCurrentIndex(cfg->getID(DISP_ID));
+    sets->initComboBox(DISP_ID, genDispLbl, genDisp);
 
     pixmapSelect = new QPixmap(":/app/images/folder2.svg", "SVG");
     pixmapClear = new QPixmap(":/app/images/eraser.svg", "SVG");
@@ -328,30 +313,20 @@ void MainWindow::initPortControls()
     portLabel->setText(tr("DMM Port"));
     portLabel->setAlignment(Qt::AlignBottom);
 
-    baudLabel->setText(tr("Baud Rate"));
+    sets->initComboBox(BAUD_ID, baudLabel, baudComboBox);
     baudLabel->setAlignment(Qt::AlignBottom);
-    baudComboBox->addItems(sets->baudRates);
-    baudComboBox->setCurrentIndex(cfg->getID(BAUD_ID));
 
-    flowLabel->setText(tr("Flow Control"));
+    sets->initComboBox(FLOW_ID, flowLabel, flowComboBox);
     flowLabel->setAlignment(Qt::AlignBottom);
-    flowComboBox->addItems(sets->flowCtrs);
-    flowComboBox->setCurrentIndex(cfg->getID(FLOW_ID));
 
-    parityLabel->setText(tr("Parity"));
+    sets->initComboBox(PARITY_ID, parityLabel, parityComboBox);
     parityLabel->setAlignment(Qt::AlignBottom);
-    parityComboBox->addItems(sets->parities);
-    parityComboBox->setCurrentIndex(cfg->getID(PARITY_ID));
 
-    dataBitsLabel->setText(tr("Data Bits"));
+    sets->initComboBox(DATA_BITS_ID, dataBitsLabel, dataBitsComboBox);
     dataBitsLabel->setAlignment(Qt::AlignBottom);
-    dataBitsComboBox->addItems(sets->dataBits);
-    dataBitsComboBox->setCurrentIndex(cfg->getID(DATA_BITS_ID));
 
-    stopBitsLabel->setText(tr("Stop Bits"));
+    sets->initComboBox(STOP_BITS_ID, stopBitsLabel, stopBitsComboBox);
     stopBitsLabel->setAlignment(Qt::AlignBottom);
-    stopBitsComboBox->addItems(sets->stopBits);
-    stopBitsComboBox->setCurrentIndex(cfg->getID(STOP_BITS_ID));
 }
 
 
@@ -360,8 +335,7 @@ void MainWindow::initPortControls()
 void MainWindow::initPorts(QStringList portNames)
 {
     qDebug() << "MainWindow::initPorts() received";
-    portComboBox->addItems(portNames);
-    portComboBox->setCurrentIndex(cfg->getID(PORT_ID));
+    sets->initComboBox(PORT_ID, portNames, portComboBox);
 }
 
 void MainWindow::reinitPorts(QStringList portNames)
@@ -410,18 +384,18 @@ void MainWindow::setResults(QStringList strList)
 {
     Report report;
 
-    if (cfg->getID(EXPORT_ID) == EXPORT_CSV) {
+    if (sets->getCfgID(EXPORT_ID) == EXPORT_CSV) {
         report.writeToCsv(strList, exportLineEdit->text());
-        cfg->setStr(CSV_PATH_STR, exportLineEdit->text());
+        sets->setCfgStr(CSV_PATH_STR, exportLineEdit->text());
     }
 #ifdef Q_OS_WIN
     else {
         report.exportToExcel(strList, exportLineEdit->text());
-        cfg->setStr(XLS_PATH_STR, exportLineEdit->text());
+        sets->setCfgStr(XLS_PATH_STR, exportLineEdit->text());
     }
 #endif
 
-    ConfigXml cfgXml(cfg);
+    ConfigXml cfgXml(sets);
     cfgXml.writeConfigFile(CFG_FILE_DEFAULT);
 }
 
@@ -454,12 +428,12 @@ void MainWindow::selectExportCsv()
 {
     exportCsv->setChecked(true);
     exportXls->setChecked(false);
-    cfg->setID(EXPORT_ID, EXPORT_CSV);
+    sets->setCfgID(EXPORT_ID, EXPORT_CSV);
     exportLbl->setText(tr("Application to open CSV"));
     disconnect(exportSelButton, SIGNAL(released()), 0, 0);
     connect(exportSelButton, SIGNAL(released()), this, SLOT(selectCsvApp()));
     exportLineEdit->setEnabled(true);
-    exportLineEdit->setText(cfg->getStr(CSV_PATH_STR));
+    exportLineEdit->setText(sets->getCfgStr(CSV_PATH_STR));
 }
 
 // Menu action, also called at app start on Win32
@@ -467,12 +441,12 @@ void MainWindow::selectExportXls()
 {
     exportCsv->setChecked(false);
     exportXls->setChecked(true);
-    cfg->setID(EXPORT_ID, EXPORT_XLS);
+    sets->setCfgID(EXPORT_ID, EXPORT_XLS);
     exportLbl->setText(tr("Excel Template"));
     disconnect(exportSelButton, SIGNAL(released()), 0, 0);
     connect(exportSelButton, SIGNAL(released()), this, SLOT(selectXls()));
     exportLineEdit->setEnabled(false);
-    exportLineEdit->setText(cfg->getStr(XLS_PATH_STR));
+    exportLineEdit->setText(sets->getCfgStr(XLS_PATH_STR));
 }
 
 // Menu action
@@ -508,16 +482,19 @@ void MainWindow::start()
     portGroup->setEnabled(false);
     dmmTabWidget->setEnabled(false);
 
-    cfg->setIDs(QVector<int>() << portComboBox->currentIndex() <<
-        baudComboBox->currentIndex() << flowComboBox->currentIndex() <<
-        parityComboBox->currentIndex() << dataBitsComboBox->currentIndex() <<
-        stopBitsComboBox->currentIndex() << measFunct->currentIndex() <<
-        measIntegrTime->currentIndex() << measAutoZero->currentIndex() <<
-        measRate->currentIndex() << trigSource->currentIndex() <<
-        trigSamples->value() << genDisp->currentIndex() <<
-        cfg->getID(EXPORT_ID));
+    sets->setCfgID(PORT_ID,   portComboBox->currentIndex());
+    sets->setCfgID(BAUD_ID,   baudComboBox->currentIndex());
+    sets->setCfgID(FLOW_ID,   flowComboBox->currentIndex());
+    sets->setCfgID(PARITY_ID, parityComboBox->currentIndex());
+    sets->setCfgID(DATA_BITS_ID, dataBitsComboBox->currentIndex());
+    sets->setCfgID(STOP_BITS_ID, stopBitsComboBox->currentIndex());
+    sets->setCfgID(FUNCT_ID,  measFunct->currentIndex());
+    sets->setCfgID(INTEGR_ID, measIntegrTime->currentIndex());
+    sets->setCfgID(AUTOZ_ID,  measAutoZero->currentIndex());
+    sets->setCfgID(MEAS_RATE_ID, measRate->currentIndex());
+    sets->setCfgID(SAMP_ID,  trigSamples->value());
+    sets->setCfgID(DISP_ID,  genDisp->currentIndex());
 
-    dmmCtr->setConfig(cfg);
     emit timeoutIndicat->setOff();
     emit errorIndicat->setOff();
     emit portCtr->disable();
@@ -548,7 +525,7 @@ void MainWindow::selectCsvApp()
 #endif
     int idx;
 
-    path = QFileDialog::getOpenFileName(this, caption, cfg->getStr(CSV_DIR_STR),
+    path = QFileDialog::getOpenFileName(this, caption, sets->getCfgStr(CSV_DIR_STR),
                                         filter);
 
     if (path.size() > 1) {
@@ -556,7 +533,7 @@ void MainWindow::selectCsvApp()
         idx = path.lastIndexOf("/");
         if (idx >= 0)
             path.truncate(idx);
-        cfg->setStr(CSV_DIR_STR, path);
+        sets->setCfgStr(CSV_DIR_STR, path);
     }
 }
 
@@ -567,14 +544,14 @@ void MainWindow::selectXls()
     QString caption = tr("Choose template file to open");
     int idx;
 
-    path = QFileDialog::getOpenFileName(this, caption, cfg->getStr(XLS_DIR_STR),
+    path = QFileDialog::getOpenFileName(this, caption, sets->getCfgStr(XLS_DIR_STR),
                                         "*.xls *.xlsx");
     if (path.size() > 1) {
         exportLineEdit->setText(path);
         idx = path.lastIndexOf("/");
         if (idx >= 0)
             path.truncate(idx);
-        cfg->setStr(XLS_DIR_STR, path);
+        sets->setCfgStr(XLS_DIR_STR, path);
     }
 }
 

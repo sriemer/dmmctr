@@ -15,9 +15,90 @@
 #define SETTINGS_H
 
 #include <qextserialport.h>
+#include <QDebug>
 #include <QObject>
 #include <QStringList>
 #include <QVector>
+
+#include <QLabel>
+#include <QComboBox>
+#include <QSpinBox>
+
+typedef enum {
+    PORT_ID,
+    BAUD_ID,
+    FLOW_ID,
+    PARITY_ID,
+    DATA_BITS_ID,
+    STOP_BITS_ID,
+    FUNCT_ID,
+    INTEGR_ID,
+    AUTOZ_ID,
+    MEAS_RATE_ID,
+    TRIG_SRC_ID,
+    SAMP_ID,
+    DISP_ID,
+    EXPORT_ID,
+    CSV_DIR_STR,
+    CSV_PATH_STR,
+    XLS_DIR_STR,
+    XLS_PATH_STR,
+    SETTINGS_SIZE  // always the last entry
+} SetIDType;
+
+typedef enum {
+    DISP_NONE,
+    DISP_STRINGS,
+    DISP_SIZE  // always last
+} DispType;
+
+typedef enum {
+    VAL_NONE,
+    VAL_BAUD,
+    VAL_FLOW,
+    VAL_PARITY,
+    VAL_DATA_BITS,
+    VAL_STOP_BITS,
+    VAL_STRINGS,
+    VAL_INTS,
+    VAL_SIZE   // always last
+} ValType;
+
+typedef enum {
+    CFG_ID,
+    CFG_INT,
+    CFG_STRING,
+    CFG_TYPES   // always last
+} CfgType;
+
+struct SetValues {
+    QVector<BaudRateType> baudIDs;
+    QVector<FlowType> flowIDs;
+    QVector<ParityType> parityIDs;
+    QVector<DataBitsType> dataBitsIDs;
+    QVector<StopBitsType> stopBitsIDs;
+    QVector<int> ints;
+    QStringList strings;
+};
+
+struct CfgValue {
+    int id;
+    QString str;
+};
+
+class SetEntry
+{
+public:
+    QString     name;
+    QString     lblText;
+    DispType    dispType;
+    QStringList dispStrings;
+    ValType     valType;
+    SetValues   values;
+    CfgType     cfgType;
+    CfgValue    defVal;
+    CfgValue    cfgVal;
+};
 
 class Settings : QObject
 {
@@ -26,91 +107,131 @@ class Settings : QObject
 friend class MainWindow;
 friend class SerialPortCtr;
 friend class DMMControl;
+friend class ConfigXml;
 
 protected:
     Settings();
 
-    // Port Settings
-    QStringList baudRates;
-    QVector<BaudRateType> baudIDs;
-    QStringList flowCtrs;
-    QVector<FlowType> flowIDs;
-    QStringList parities;
-    QVector<ParityType> parityIDs;
-    QStringList dataBits;
-    QVector<DataBitsType> dataBitsIDs;
-    QStringList stopBits;
-    QVector<StopBitsType> stopBitsIDs;
-    // DMM Settings
-    QStringList measFunctions;
-    QStringList _measFunctions;
-    QStringList measIntegrTimes;
-    QStringList _measIntegrTimes;
-    QStringList measAutoZero;
-    QStringList _measAutoZero;
-    QStringList measRates;
-    QStringList _measRates;
-    QStringList trigSources;
-    QStringList _trigSources;
-    QStringList genDisp;
-    QStringList _genDisp;
-
-    // Port Settings
-    inline BaudRateType getBaudID(int idx)
+    inline void initComboBox(SetIDType id, QStringList sl, QComboBox *combo)
     {
-        return baudIDs.at(idx);
+         combo->addItems(sl);
+         if (sets[id].cfgVal.id < sl.size())
+             combo->setCurrentIndex(sets[id].cfgVal.id);
+         else
+             combo->setCurrentIndex(sl.size() - 1);
     }
 
-    inline FlowType getFlowID(int idx)
+    inline void initComboBox(SetIDType id, QLabel *lbl, QComboBox *combo)
     {
-        return flowIDs.at(idx);
+         lbl->setText(sets[id].lblText);
+         combo->addItems(sets[id].dispStrings);
+         if (sets[id].cfgVal.id < sets[id].dispStrings.size())
+             combo->setCurrentIndex(sets[id].cfgVal.id);
+         else
+             combo->setCurrentIndex(sets[id].dispStrings.size() - 1);
     }
 
-    inline ParityType getParityID(int idx)
+    inline void initSpinBox(SetIDType id, QLabel *lbl, QSpinBox *spin)
     {
-        return parityIDs.at(idx);
+        lbl->setText(sets[id].lblText);
+        spin->setMinimum(sets[id].values.ints.at(0));
+        spin->setMaximum(sets[id].values.ints.at(1));
+        spin->setValue(sets[id].cfgVal.id);
     }
 
-    inline DataBitsType getDataBitsID(int idx)
+    inline QString getStringFromID(SetIDType id)
     {
-        return dataBitsIDs.at(idx);
+        int cfg_id = sets[id].cfgVal.id;
+        return sets[id].values.strings.value(cfg_id);
     }
 
-    inline StopBitsType getStopBitsID(int idx)
+    inline BaudRateType getBaudFromID(SetIDType id)
     {
-        return stopBitsIDs.at(idx);
+        int cfg_id = sets[id].cfgVal.id;
+        return sets[id].values.baudIDs.value(cfg_id);
     }
 
-    // DMM Settings
-    inline QString getMeasFunctCmd(int idx)
+    inline ParityType getParityFromID(SetIDType id)
     {
-        return measFunctions.at(idx);
+        int cfg_id = sets[id].cfgVal.id;
+        return sets[id].values.parityIDs.value(cfg_id);
     }
 
-    inline QString getMeasIntegrTime(int idx)
+    inline FlowType getFlowFromID(SetIDType id)
     {
-        return _measIntegrTimes.at(idx);
+        int cfg_id = sets[id].cfgVal.id;
+        return sets[id].values.flowIDs.value(cfg_id);
     }
 
-    inline QString getMeasAutoZero(int idx)
+    inline DataBitsType getDataBitsFromID(SetIDType id)
     {
-        return _measAutoZero.at(idx);
+        int cfg_id = sets[id].cfgVal.id;
+        return sets[id].values.dataBitsIDs.value(cfg_id);
     }
 
-    inline QString getTrigSource(int idx)
+    inline StopBitsType getStopBitsFromID(SetIDType id)
     {
-        return _trigSources.at(idx);
+        int cfg_id = sets[id].cfgVal.id;
+        return sets[id].values.stopBitsIDs.value(cfg_id);
     }
 
-    inline QString getMeasRate(int idx)
+    inline int getCfgID(SetIDType id)
     {
-        return _measRates.at(idx);
+        return sets[id].cfgVal.id;
     }
 
-    inline QString getDisp(int idx)
+    inline int getCfgInt(SetIDType id)
     {
-        return _genDisp.at(idx);
+        return getCfgID(id);
     }
+
+    inline QString getCfgStr(SetIDType id)
+    {
+        return sets[id].cfgVal.str;
+    }
+
+    inline void setCfgID(SetIDType id, int id_val)
+    {
+        sets[id].cfgVal.id = id_val;
+    }
+
+    inline void setCfgID(QString name, int id_val)
+    {
+        for (int i = 0; i < SETTINGS_SIZE; i++) {
+            if (sets[i].name == name) {
+                sets[i].cfgVal.id = id_val;
+                break;
+            }
+        }
+    }
+
+    inline void setCfgStr(SetIDType id, QString str)
+    {
+        sets[id].cfgVal.str = str;
+    }
+
+    inline void setCfgStr(QString name, QString str)
+    {
+        for (int i = 0; i < SETTINGS_SIZE; i++) {
+            if (sets[i].name == name) {
+                sets[i].cfgVal.str = str;
+                break;
+            }
+        }
+    }
+
+    inline CfgType getCfgType(SetIDType id)
+    {
+        return sets[id].cfgType;
+    }
+
+    inline QString getName(SetIDType id)
+    {
+        return sets[id].name;
+    }
+
+private:
+    QVector<SetEntry> sets;
 };
 
 #endif

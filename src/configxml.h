@@ -16,24 +16,24 @@
 
 #include <QtXml/QtXml>
 #include <QString>
-#include "config.h"
+#include "settings.h"
 
 #define CFG_FILE_DEFAULT PROG_NAME ".xml"
 
 class ConfigXml
 {
 public:
-    ConfigXml(Config *cfg);
+    ConfigXml(Settings *settings);
     void readConfigFile  (const QString fileName);
     bool writeConfigFile (const QString fileNames);
 
 private:
-    Config *config;
+    Settings *sets;
     QXmlStreamReader reader;
 
-    void readConfigElement (int *intIdx, int *strIdx);
-    void readEntryElement  (int *intIdx, int *strIdx);
-    void readValue         (const QString type, int *intIdx, int *strIdx);
+    void readConfigElement (void);
+    void readEntryElement  (void);
+    void readValue         (const QString type);
     void skipUnknownElement(void);
     void writeEntries      (QXmlStreamWriter *writer);
 };

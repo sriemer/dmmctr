@@ -18,7 +18,6 @@
 #include <qextserialport.h>
 
 #include "settings.h"
-#include "config.h"
 #include "serialportctr.h"
 
 #define RD_DEF_TIMEOUT  2000  // ms
@@ -35,9 +34,8 @@ class DMMControl : public QThread
     Q_OBJECT
 
 public:
-    DMMControl(SerialPortCtr *portControl, Settings *settings, Config *config);
+    DMMControl(SerialPortCtr *portControl, Settings *settings);
     ~DMMControl();
-    void setConfig(Config *config);
     void run();
     bool isReady();
 
@@ -59,7 +57,6 @@ private:
     QextSerialPort *serPort;
     SerialPortCtr  *portCtr;
     Settings *sets;
-    Config   *cfg;
     QString message;
     bool    stopRequested;
     bool    ready;

@@ -19,7 +19,6 @@
 #include <QThread>
 #include <QStringList>
 #include "settings.h"
-#include "config.h"
 
 class SerialPortCtr : public QThread
 {
@@ -29,7 +28,7 @@ public:
     SerialPortCtr();
     void run();
     void detectPorts (void);
-    QextSerialPort *openPort   (Settings *sets, Config *cfg);
+    QextSerialPort *openPort   (Settings *sets);
     void           closePort   (QextSerialPort *port);
 
 signals:
@@ -49,7 +48,7 @@ private:
     void _detectPorts (void);
     int  filterPortsPosix (int i);
     int  filterPortsWin   (int i);
-    void configurePort    (QextSerialPort *port, Settings *sets, Config *cfg);
+    void configurePort    (QextSerialPort *port, Settings *sets);
     void debugPorts  (void);
 };
 
