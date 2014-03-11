@@ -165,14 +165,20 @@ protected:
     {
         initLabel(id, lbl);
         initComboBox(id, combo);
+
+        if (combo->minimumSizeHint().width() < lbl->minimumSizeHint().width())
+            combo->setMinimumWidth(lbl->minimumSizeHint().width());
     }
 
     inline void initSpinBox(SetIDType id, QLabel *lbl, QSpinBox *spin)
     {
-        lbl->setText(sets[id].lblText);
+        initLabel(id, lbl);
         spin->setMinimum(sets[id].values.ints.at(0));
         spin->setMaximum(sets[id].values.ints.at(1));
         spin->setValue(sets[id].cfgVal.id);
+
+        if (spin->minimumSizeHint().width() < lbl->minimumSizeHint().width())
+            spin->setMinimumWidth(lbl->minimumSizeHint().width());
     }
 
     inline QString getStringFromID(SetIDType id)
