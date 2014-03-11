@@ -112,6 +112,11 @@ friend class ConfigXml;
 protected:
     Settings();
 
+    inline void initLabel(SetIDType id, QLabel *lbl)
+    {
+         lbl->setText(sets[id].lblText);
+    }
+
     inline void initComboBox(SetIDType id, QStringList sl, QComboBox *combo)
     {
          combo->addItems(sl);

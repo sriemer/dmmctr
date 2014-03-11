@@ -310,7 +310,7 @@ void MainWindow::initPortControls()
     portGroup->setTitle(tr("Serial Port"));
     this->setStyleSheet("QGroupBox { font: bold }");
 
-    portLabel->setText(tr("DMM Port"));
+    sets->initLabel(PORT_ID, portLabel);
     portLabel->setAlignment(Qt::AlignBottom);
 
     sets->initComboBox(BAUD_ID, baudLabel, baudComboBox);

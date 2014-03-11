@@ -30,7 +30,7 @@ Settings::Settings()
     // Selectable Port Settings
     idx = PORT_ID;
     sets[idx].name      = "port";
-    sets[idx].lblText   = "port";
+    sets[idx].lblText   = tr("DMM Port");
     sets[idx].dispType  = DISP_STRINGS;
     sets[idx].valType   = VAL_STRINGS;
     sets[idx].cfgType   = CFG_ID;
