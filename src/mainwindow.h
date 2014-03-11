@@ -132,6 +132,9 @@ private slots:
     void selectCsvApp    (void);
     void selectXls       (void);
     void clearExportText (void);
+
+    // DMM ctr actions
+    void updateRange     (int rateIdx);
 };
 
 #endif

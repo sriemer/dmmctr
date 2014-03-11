@@ -137,11 +137,10 @@ protected:
              combo->setCurrentIndex(sl.size() - 1);
     }
 
-    inline void initComboBox(SetIDType id, QLabel *lbl, QComboBox *combo)
+    inline void initComboBox(SetIDType id, QComboBox *combo)
     {
         int id2 = sets[id].cfgVal.id2;
 
-        lbl->setText(sets[id].lblText);
         switch (sets[id].dispType) {
         case DISP_STRINGS:
             combo->addItems(sets[id].dispVals.strings);
@@ -160,6 +159,12 @@ protected:
         default:
             break;
         }
+    }
+
+    inline void initComboBox(SetIDType id, QLabel *lbl, QComboBox *combo)
+    {
+        initLabel(id, lbl);
+        initComboBox(id, combo);
     }
 
     inline void initSpinBox(SetIDType id, QLabel *lbl, QSpinBox *spin)
@@ -224,6 +229,16 @@ protected:
     inline void setCfgID(SetIDType id, int id_val)
     {
         sets[id].cfgVal.id = id_val;
+    }
+
+    inline int getCfgID2(SetIDType id)
+    {
+        return sets[id].cfgVal.id2;
+    }
+
+    inline void setCfgID2(SetIDType id, int id_val)
+    {
+        sets[id].cfgVal.id2 = id_val;
     }
 
     inline void setCfgID(QString name, int id_val)

@@ -276,6 +276,10 @@ void MainWindow::initControls()
 
     sets->initComboBox(MEAS_RATE_ID, measRateLbl, measRate);
 
+    // Range depends on rate
+    connect(measRate, SIGNAL(currentIndexChanged(int)), this, SLOT(updateRange(int)));
+    updateRange(measRate->currentIndex());
+
     sets->initComboBox(TRIG_SRC_ID, trigSourceLbl, trigSource);
 
     sets->initSpinBox(SAMP_ID, trigSamplesLbl, trigSamples);
@@ -358,24 +362,24 @@ void MainWindow::reinitPorts(QStringList portNames)
 
 void MainWindow::setTimeout()
 {
-    emit timeoutIndicat->setOn();
+    timeoutIndicat->setOn();
     stop();
 }
 
 void MainWindow::clearTimeout()
 {
-    emit timeoutIndicat->setOff();
+    timeoutIndicat->setOff();
 }
 
 void MainWindow::setError()
 {
-    emit errorIndicat->setOn();
+    errorIndicat->setOn();
     stop();
 }
 
 void MainWindow::clearError()
 {
-    emit errorIndicat->setOff();
+    errorIndicat->setOff();
 }
 
 void MainWindow::portsDetected()
@@ -501,9 +505,9 @@ void MainWindow::start()
     sets->setCfgID(SAMP_ID,  trigSamples->value());
     sets->setCfgID(DISP_ID,  genDisp->currentIndex());
 
-    emit timeoutIndicat->setOff();
-    emit errorIndicat->setOff();
-    emit portCtr->disable();
+    timeoutIndicat->setOff();
+    errorIndicat->setOff();
+    portCtr->disable();
 }
 
 // Button event
@@ -516,7 +520,7 @@ void MainWindow::stop()
     stopButton->setEnabled(false);
     portGroup->setEnabled(true);
     dmmTabWidget->setEnabled(true);
-    emit dmmCtr->requestStop();
+    dmmCtr->requestStop();
 }
 
 // Button event
@@ -565,4 +569,22 @@ void MainWindow::selectXls()
 void MainWindow::clearExportText()
 {
     exportLineEdit->clear();
+}
+
+// DMM ComboBox event
+void MainWindow::updateRange(int rateIdx)
+{
+    int rangeSetID = sets->getCfgID2(RANGE_ID);
+    int newRangeSetID = 0;
+
+    if (rateIdx != 0)  // not slow ?
+        newRangeSetID = 1;
+
+    if (rangeSetID == newRangeSetID)
+        return;
+
+    sets->setCfgID2(RANGE_ID, newRangeSetID);
+    sets->setCfgID(RANGE_ID, measRange->currentIndex());
+    measRange->clear();
+    sets->initComboBox(RANGE_ID, measRange);
 }
