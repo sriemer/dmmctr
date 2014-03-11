@@ -41,7 +41,7 @@ Settings::Settings()
     sets[idx].name      = "baud";
     sets[idx].lblText   = tr("Baud Rate");
     sets[idx].dispType  = DISP_STRINGS;
-    sets[idx].dispStrings = QStringList() << "1200" << "2400" << "4800"
+    sets[idx].dispVals.strings = QStringList() << "1200" << "2400" << "4800"
         << "9600" << "19200" << "38400" << "57600" << "115200";
     sets[idx].valType   = VAL_BAUD;
     sets[idx].values.baudIDs = QVector<BaudRateType>() << BAUD1200 << BAUD2400 << BAUD4800
@@ -54,7 +54,7 @@ Settings::Settings()
     sets[idx].name      = "flow";
     sets[idx].lblText   = tr("Flow Control");
     sets[idx].dispType  = DISP_STRINGS;
-    sets[idx].dispStrings = QStringList() << tr("None") << "XON/XOFF" << "RTS/CTS";
+    sets[idx].dispVals.strings = QStringList() << tr("None") << "XON/XOFF" << "RTS/CTS";
     sets[idx].valType   = VAL_FLOW;
     sets[idx].values.flowIDs = QVector<FlowType>() << FLOW_OFF << FLOW_XONXOFF << FLOW_HARDWARE;
     sets[idx].cfgType   = CFG_ID;
@@ -65,7 +65,7 @@ Settings::Settings()
     sets[idx].name      = "parity";
     sets[idx].lblText   = tr("Parity");
     sets[idx].dispType  = DISP_STRINGS;
-    sets[idx].dispStrings = QStringList() << tr("None") << tr("Odd") << tr("Even");
+    sets[idx].dispVals.strings = QStringList() << tr("None") << tr("Odd") << tr("Even");
     sets[idx].valType   = VAL_PARITY;
     sets[idx].values.parityIDs = QVector<ParityType>() << PAR_NONE << PAR_ODD << PAR_EVEN;
     sets[idx].cfgType   = CFG_ID;
@@ -76,7 +76,7 @@ Settings::Settings()
     sets[idx].name      = "data_b";
     sets[idx].lblText   = tr("Data Bits");
     sets[idx].dispType  = DISP_STRINGS;
-    sets[idx].dispStrings = QStringList() << "7" << "8";
+    sets[idx].dispVals.strings = QStringList() << "7" << "8";
     sets[idx].valType   = VAL_DATA_BITS;
     sets[idx].values.dataBitsIDs = QVector<DataBitsType>() << DATA_7 << DATA_8;
     sets[idx].cfgType   = CFG_ID;
@@ -87,7 +87,7 @@ Settings::Settings()
     sets[idx].name      = "stop_b";
     sets[idx].lblText   = tr("Stop Bits");
     sets[idx].dispType  = DISP_STRINGS;
-    sets[idx].dispStrings = QStringList() << QString("1.0") << QString("2.0");
+    sets[idx].dispVals.strings = QStringList() << QString("1.0") << QString("2.0");
     sets[idx].valType   = VAL_STOP_BITS;
     sets[idx].values.stopBitsIDs = QVector<StopBitsType>() << STOP_1 << STOP_2;
     sets[idx].cfgType   = CFG_ID;
@@ -99,7 +99,7 @@ Settings::Settings()
     sets[idx].name      = "funct";
     sets[idx].lblText   = tr("Function");
     sets[idx].dispType  = DISP_STRINGS;
-    sets[idx].dispStrings = QStringList() << tr("DC Volts");
+    sets[idx].dispVals.strings = QStringList() << tr("DC Volts");
     sets[idx].valType   = VAL_STRINGS;
     sets[idx].values.strings = QStringList() << "CONF:VOLT:DC";
     sets[idx].cfgType   = CFG_ID;
@@ -110,7 +110,7 @@ Settings::Settings()
     sets[idx].name      = "integ";
     sets[idx].lblText   = tr("Integration Time");
     sets[idx].dispType  = DISP_STRINGS;
-    sets[idx].dispStrings = QStringList() << QString("0.02") << QString("0.2") << "1"
+    sets[idx].dispVals.strings = QStringList() << QString("0.02") << QString("0.2") << "1"
         << "10" << "100";
     sets[idx].valType   = VAL_STRINGS;
     sets[idx].values.strings = QStringList() << "0.020000" << "0.200000" << "1.000000"
@@ -123,18 +123,33 @@ Settings::Settings()
     sets[idx].name      = "autoz";
     sets[idx].lblText   = tr("Autozero");
     sets[idx].dispType  = DISP_STRINGS;
-    sets[idx].dispStrings = QStringList() << tr("Off") << tr("On") << tr("Once");
+    sets[idx].dispVals.strings = QStringList() << tr("Off") << tr("On") << tr("Once");
     sets[idx].valType   = VAL_STRINGS;
     sets[idx].values.strings = QStringList() << "OFF" << "ON" << "ONCE";
     sets[idx].cfgType   = CFG_ID;
     sets[idx].defVal.id = 0;
     sets[idx].cfgVal.id = 0;
 
+    idx = RANGE_ID;
+    sets[idx].name      = "range";
+    sets[idx].lblText   = tr("Range");
+    sets[idx].dispType  = DISP_SL_VEC;
+    sets[idx].dispVals.slVec = QVector<QStringList>()
+        << (QStringList() << "100 mV" << "1000 mV" << "10 V" << "100 V" << "1000 V")
+        << (QStringList() << "300 mV" << "3000 mV" << "30 V" << "300 V" << "1000 V");
+    sets[idx].valType   = VAL_STRINGS;
+    sets[idx].values.strings = QStringList() << "1" << "2" << "3" << "4" << "5";
+    sets[idx].cfgType    = CFG_ID;
+    sets[idx].defVal.id  = 0;
+    sets[idx].defVal.id2 = 0;
+    sets[idx].cfgVal.id  = 0;
+    sets[idx].cfgVal.id2 = 0;
+
     idx = MEAS_RATE_ID;
     sets[idx].name      = "rate";
     sets[idx].lblText   = tr("Rate");
     sets[idx].dispType  = DISP_STRINGS;
-    sets[idx].dispStrings = QStringList() << tr("Slow (2.5/s)") << tr("Medium (5/s)")
+    sets[idx].dispVals.strings = QStringList() << tr("Slow (2.5/s)") << tr("Medium (5/s)")
         << tr("Fast (20/s)");
     sets[idx].valType   = VAL_STRINGS;
     sets[idx].values.strings = QStringList() << "S" << "M" << "F";
@@ -146,7 +161,7 @@ Settings::Settings()
     sets[idx].name      = "trigs";
     sets[idx].lblText   = tr("Trigger Source");
     sets[idx].dispType  = DISP_STRINGS;
-    sets[idx].dispStrings = QStringList() << tr("Immediate") << tr("External");
+    sets[idx].dispVals.strings = QStringList() << tr("Immediate") << tr("External");
     sets[idx].valType   = VAL_STRINGS;
     sets[idx].values.strings = QStringList() << "IMM" << "EXT";
     sets[idx].cfgType   = CFG_ID;
@@ -167,7 +182,7 @@ Settings::Settings()
     sets[idx].name      = "disp";
     sets[idx].lblText   = tr("Display");
     sets[idx].dispType  = DISP_STRINGS;
-    sets[idx].dispStrings = QStringList() << tr("Off") << tr("On");
+    sets[idx].dispVals.strings = QStringList() << tr("Off") << tr("On");
     sets[idx].valType   = VAL_STRINGS;
     sets[idx].values.strings = QStringList() << "OFF" << "ON";
     sets[idx].cfgType   = CFG_ID;

@@ -90,6 +90,8 @@ private:
     QComboBox    *measIntegrTime;
     QLabel       *measAutoZeroLbl;
     QComboBox    *measAutoZero;
+    QLabel       *measRangeLbl;
+    QComboBox    *measRange;
     QLabel       *measRateLbl;
     QComboBox    *measRate;
     QWidget      *trigWidget;

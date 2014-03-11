@@ -61,6 +61,8 @@ MainWindow::MainWindow()
     measIntegrTime     = new QComboBox;
     measAutoZeroLbl    = new QLabel;
     measAutoZero       = new QComboBox;
+    measRangeLbl       = new QLabel;
+    measRange          = new QComboBox;
     measRateLbl        = new QLabel;
     measRate           = new QComboBox;
     trigWidget         = new QWidget;
@@ -199,8 +201,10 @@ void MainWindow::initLayout()
     measLayout->addWidget(measIntegrTime, 3, 0, Qt::AlignTop);
     measLayout->addWidget(measAutoZeroLbl, 4, 0, Qt::AlignBottom);
     measLayout->addWidget(measAutoZero, 5, 0, Qt::AlignTop);
-    measLayout->addWidget(measRateLbl, 0, 1, 1, 2, Qt::AlignBottom);
-    measLayout->addWidget(measRate, 1, 1, Qt::AlignTop);
+    measLayout->addWidget(measRangeLbl, 0, 1, 1, 2, Qt::AlignBottom);
+    measLayout->addWidget(measRange, 1, 1, Qt::AlignTop);
+    measLayout->addWidget(measRateLbl, 2, 1, Qt::AlignBottom);
+    measLayout->addWidget(measRate, 3, 1, Qt::AlignTop);
     measWidget->setLayout(measLayout);
     dmmTabWidget->addTab(measWidget, tr("Measurement"));
 
@@ -267,6 +271,8 @@ void MainWindow::initControls()
     sets->initComboBox(INTEGR_ID, measIntegrTimeLbl, measIntegrTime);
 
     sets->initComboBox(AUTOZ_ID, measAutoZeroLbl, measAutoZero);
+
+    sets->initComboBox(RANGE_ID, measRangeLbl, measRange);
 
     sets->initComboBox(MEAS_RATE_ID, measRateLbl, measRate);
 

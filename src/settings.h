@@ -34,6 +34,7 @@ typedef enum {
     FUNCT_ID,
     INTEGR_ID,
     AUTOZ_ID,
+    RANGE_ID,
     MEAS_RATE_ID,
     TRIG_SRC_ID,
     SAMP_ID,
@@ -49,8 +50,14 @@ typedef enum {
 typedef enum {
     DISP_NONE,
     DISP_STRINGS,
+    DISP_SL_VEC,
     DISP_SIZE  // always last
 } DispType;
+
+struct DispValues {
+    QStringList strings;
+    QVector<QStringList> slVec;
+};
 
 typedef enum {
     VAL_NONE,
@@ -60,16 +67,11 @@ typedef enum {
     VAL_DATA_BITS,
     VAL_STOP_BITS,
     VAL_STRINGS,
+    VAL_SL_VEC,
     VAL_INTS,
     VAL_SIZE   // always last
 } ValType;
 
-typedef enum {
-    CFG_ID,
-    CFG_INT,
-    CFG_STRING,
-    CFG_TYPES   // always last
-} CfgType;
 
 struct SetValues {
     QVector<BaudRateType> baudIDs;
@@ -79,10 +81,19 @@ struct SetValues {
     QVector<StopBitsType> stopBitsIDs;
     QVector<int> ints;
     QStringList strings;
+    QVector<QStringList> slVec;
 };
+
+typedef enum {
+    CFG_ID,
+    CFG_INT,
+    CFG_STRING,
+    CFG_TYPES   // always last
+} CfgType;
 
 struct CfgValue {
     int id;
+    int id2;
     QString str;
 };
 
@@ -92,7 +103,7 @@ public:
     QString     name;
     QString     lblText;
     DispType    dispType;
-    QStringList dispStrings;
+    DispValues  dispVals;
     ValType     valType;
     SetValues   values;
     CfgType     cfgType;
@@ -128,12 +139,27 @@ protected:
 
     inline void initComboBox(SetIDType id, QLabel *lbl, QComboBox *combo)
     {
-         lbl->setText(sets[id].lblText);
-         combo->addItems(sets[id].dispStrings);
-         if (sets[id].cfgVal.id < sets[id].dispStrings.size())
-             combo->setCurrentIndex(sets[id].cfgVal.id);
-         else
-             combo->setCurrentIndex(sets[id].dispStrings.size() - 1);
+        int id2 = sets[id].cfgVal.id2;
+
+        lbl->setText(sets[id].lblText);
+        switch (sets[id].dispType) {
+        case DISP_STRINGS:
+            combo->addItems(sets[id].dispVals.strings);
+            if (sets[id].cfgVal.id < sets[id].dispVals.strings.size())
+                combo->setCurrentIndex(sets[id].cfgVal.id);
+            else
+                combo->setCurrentIndex(sets[id].dispVals.strings.size() - 1);
+            break;
+        case DISP_SL_VEC:
+            combo->addItems(sets[id].dispVals.slVec[id2]);
+            if (sets[id].cfgVal.id < sets[id].dispVals.slVec[id2].size())
+                combo->setCurrentIndex(sets[id].cfgVal.id);
+            else
+                combo->setCurrentIndex(sets[id].dispVals.slVec[id2].size() - 1);
+            break;
+        default:
+            break;
+        }
     }
 
     inline void initSpinBox(SetIDType id, QLabel *lbl, QSpinBox *spin)
