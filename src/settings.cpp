@@ -178,6 +178,16 @@ Settings::Settings()
     sets[idx].defVal.id = 1;
     sets[idx].cfgVal.id = 1;
 
+    idx = TRIG_DEL_ID;
+    sets[idx].name      = "trigd";
+    sets[idx].lblText   = tr("Trigger Delay");
+    sets[idx].dispType  = DISP_NONE;
+    sets[idx].valType   = VAL_INTS;
+    sets[idx].values.ints = QVector<int>() << 0 << 3600;
+    sets[idx].cfgType   = CFG_INT;
+    sets[idx].defVal.id = 0;
+    sets[idx].cfgVal.id = 0;
+
     idx = SAMP_ID;
     sets[idx].name      = "sampl";
     sets[idx].lblText   = tr("Samples");

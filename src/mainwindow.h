@@ -100,6 +100,8 @@ private:
     QComboBox    *trigSource;
     QLabel       *trigCountLbl;
     QSpinBox     *trigCount;
+    QLabel       *trigDelayLbl;
+    QSpinBox     *trigDelay;
     QLabel       *trigSamplesLbl;
     QSpinBox     *trigSamples;
     QLabel       *genDispLbl;

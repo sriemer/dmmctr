@@ -38,6 +38,7 @@ typedef enum {
     MEAS_RATE_ID,
     TRIG_SRC_ID,
     TRIG_CNT_ID,
+    TRIG_DEL_ID,
     SAMP_ID,
     DISP_ID,
     EXPORT_ID,
