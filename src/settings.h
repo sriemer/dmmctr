@@ -233,6 +233,11 @@ protected:
         return getCfgID(id);
     }
 
+    inline QString getCfgIntAsStr(SetIDType id)
+    {
+        return QString().setNum(getCfgInt(id));
+    }
+
     inline QString getCfgStr(SetIDType id)
     {
         return sets[id].cfgVal.str;

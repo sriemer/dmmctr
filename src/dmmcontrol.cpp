@@ -159,7 +159,11 @@ int DMMControl::initDMM(void)
     }
 
     // set trigger config
-    message = ":TRIG:DEL:AUTO ON;:TRIG:SOUR ";
+    message = ":TRIG:DEL ";
+    message.append(sets->getCfgIntAsStr(TRIG_DEL_ID));
+    message.append(";:TRIG:DEL:AUTO ");
+    message.append(sets->getStringFromID(TRIG_ADE_ID));
+    message.append(";:TRIG:SOUR ");
     message.append(sets->getStringFromID(TRIG_SRC_ID));
     message.append(";\n" DMM_SYS_ERR);
     expected = DMM_SYS_EXP;
@@ -173,20 +177,18 @@ int DMMControl::retrieveDMMVal(int error)
     QString expected;
     QRegExp expRegExp;
     QTime   startTime;
-    QString samples;
     QString duration;
     QStringList values;
 
-    samples.setNum(sets->getCfgInt(SAMP_ID));
     startTime = QTime::currentTime();
     time = QDateTime::currentMSecsSinceEpoch();  // Qt 4.7 needed
 
     while (!error && !stopRequested) {
         // set trigger and sample count
         message = ":TRIG:COUN ";
-        message.append(samples);
+        message.append(sets->getCfgIntAsStr(TRIG_CNT_ID));
         message.append(";:SAMP:COUN ");
-        message.append(samples);
+        message.append(sets->getCfgIntAsStr(SAMP_ID));
         message.append(";\n" DMM_SYS_ERR);
         expected = DMM_SYS_EXP;
         error = sendAndReadBack(&expected);
