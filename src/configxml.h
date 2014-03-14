@@ -32,8 +32,8 @@ private:
     QXmlStreamReader reader;
 
     void readConfigElement (void);
-    void readEntryElement  (void);
-    void readValue         (const QString type);
+    void readEntryElement  (int *id);
+    void readValue         (int *id, const QString type);
     void skipUnknownElement(void);
     void writeEntries      (QXmlStreamWriter *writer);
 };

@@ -258,14 +258,23 @@ protected:
         sets[id].cfgVal.id2 = id_val;
     }
 
-    inline void setCfgID(QString name, int id_val)
+    inline int setCfgID(int id, QString name, int id_val)
     {
-        for (int i = 0; i < SETTINGS_SIZE; i++) {
+        for (int i = id; i < SETTINGS_SIZE; i++) {
             if (sets[i].name == name) {
                 sets[i].cfgVal.id = id_val;
-                break;
+                return ++i;
             }
         }
+        if (id >= SETTINGS_SIZE)
+            id = 0;
+        for (int i = id - 1; i >= 0; i--) {
+            if (sets[i].name == name) {
+                sets[i].cfgVal.id = id_val;
+                return ++i;
+            }
+        }
+        return id;
     }
 
     inline void setCfgStr(SetIDType id, QString str)
@@ -273,14 +282,23 @@ protected:
         sets[id].cfgVal.str = str;
     }
 
-    inline void setCfgStr(QString name, QString str)
+    inline int setCfgStr(int id, QString name, QString str)
     {
-        for (int i = 0; i < SETTINGS_SIZE; i++) {
+        for (int i = id; i < SETTINGS_SIZE; i++) {
             if (sets[i].name == name) {
                 sets[i].cfgVal.str = str;
-                break;
+                return ++i;
             }
         }
+        if (id >= SETTINGS_SIZE)
+            id = 0;
+        for (int i = id - 1; i >= 0; i--) {
+            if (sets[i].name == name) {
+                sets[i].cfgVal.str = str;
+                return ++i;
+            }
+        }
+        return id;
     }
 
     inline CfgType getCfgType(SetIDType id)

@@ -53,6 +53,8 @@ void ConfigXml::readConfigFile(const QString fileName)
 
 void ConfigXml::readConfigElement(void)
 {
+    int id = 0;
+
     reader.readNext();
     while (!reader.atEnd()) {
         if (reader.isEndElement()) {
@@ -62,7 +64,7 @@ void ConfigXml::readConfigElement(void)
 
         if (reader.isStartElement()) {
             if (reader.name() == "entry") {
-                readEntryElement();
+                readEntryElement(&id);
             } else {
                 skipUnknownElement();
             }
@@ -72,7 +74,7 @@ void ConfigXml::readConfigElement(void)
     }
 }
 
-void ConfigXml::readEntryElement(void)
+void ConfigXml::readEntryElement(int *id)
 {
     QString type = reader.attributes().value("type").toString();
 
@@ -85,9 +87,9 @@ void ConfigXml::readEntryElement(void)
 
         if (reader.isStartElement()) {
             if (reader.name() == "entry") {
-                readEntryElement();
+                readEntryElement(id);
             } else if (reader.name() == "value") {
-                readValue(type);
+                readValue(id, type);
             } else {
                 skipUnknownElement();
             }
@@ -97,7 +99,7 @@ void ConfigXml::readEntryElement(void)
     }
 }
 
-void ConfigXml::readValue(const QString type)
+void ConfigXml::readValue(int *id, const QString type)
 {
     QString name = reader.attributes().value("name").toString();
     QString value = reader.readElementText();
@@ -106,9 +108,9 @@ void ConfigXml::readValue(const QString type)
         reader.readNext();
 
     if (type == "int")
-        sets->setCfgID(name, value.toInt());
+        *id = sets->setCfgID(*id, name, value.toInt());
     else if (type == "str")
-        sets->setCfgStr(name, value);
+        *id = sets->setCfgStr(*id, name, value);
 }
 
 void ConfigXml::skipUnknownElement()
