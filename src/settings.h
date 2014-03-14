@@ -25,12 +25,14 @@
 #include <QSpinBox>
 
 typedef enum {
+    // Port settings
     PORT_ID,
     BAUD_ID,
     FLOW_ID,
     PARITY_ID,
     DATA_BITS_ID,
     STOP_BITS_ID,
+    // DMM settings
     FUNCT_ID,
     INTEGR_ID,
     AUTOZ_ID,
@@ -41,6 +43,7 @@ typedef enum {
     TRIG_DEL_ID,
     SAMP_ID,
     DISP_ID,
+    // Export settings
     EXPORT_ID,
     CSV_DIR_STR,
     CSV_PATH_STR,

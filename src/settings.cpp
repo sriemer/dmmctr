@@ -161,9 +161,9 @@ Settings::Settings()
     sets[idx].name      = "trigs";
     sets[idx].lblText   = tr("Trigger Source");
     sets[idx].dispType  = DISP_STRINGS;
-    sets[idx].dispVals.strings = QStringList() << tr("Immediate") << tr("External");
+    sets[idx].dispVals.strings = QStringList() << tr("Immediate") << tr("External") << "IEEE-488";
     sets[idx].valType   = VAL_STRINGS;
-    sets[idx].values.strings = QStringList() << "IMM" << "EXT";
+    sets[idx].values.strings = QStringList() << "IMM" << "EXT" << "BUS";
     sets[idx].cfgType   = CFG_ID;
     sets[idx].defVal.id = 0;
     sets[idx].cfgVal.id = 0;
@@ -173,7 +173,7 @@ Settings::Settings()
     sets[idx].lblText   = tr("Trigger Count");
     sets[idx].dispType  = DISP_NONE;
     sets[idx].valType   = VAL_INTS;
-    sets[idx].values.ints = QVector<int>() << 1 << 5000;
+    sets[idx].values.ints = QVector<int>() << 1 << 50000;
     sets[idx].cfgType   = CFG_INT;
     sets[idx].defVal.id = 1;
     sets[idx].cfgVal.id = 1;
@@ -193,7 +193,7 @@ Settings::Settings()
     sets[idx].lblText   = tr("Samples");
     sets[idx].dispType  = DISP_NONE;
     sets[idx].valType   = VAL_INTS;
-    sets[idx].values.ints = QVector<int>() << 1 << 5000;
+    sets[idx].values.ints = QVector<int>() << 1 << 50000;
     sets[idx].cfgType   = CFG_INT;
     sets[idx].defVal.id = 1;
     sets[idx].cfgVal.id = 1;

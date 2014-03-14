@@ -504,16 +504,20 @@ void MainWindow::start()
     portGroup->setEnabled(false);
     dmmTabWidget->setEnabled(false);
 
+    // Port config
     sets->setCfgID(PORT_ID,   portComboBox->currentIndex());
     sets->setCfgID(BAUD_ID,   baudComboBox->currentIndex());
     sets->setCfgID(FLOW_ID,   flowComboBox->currentIndex());
     sets->setCfgID(PARITY_ID, parityComboBox->currentIndex());
     sets->setCfgID(DATA_BITS_ID, dataBitsComboBox->currentIndex());
     sets->setCfgID(STOP_BITS_ID, stopBitsComboBox->currentIndex());
+    // DMM config
     sets->setCfgID(FUNCT_ID,  measFunct->currentIndex());
     sets->setCfgID(INTEGR_ID, measIntegrTime->currentIndex());
     sets->setCfgID(AUTOZ_ID,  measAutoZero->currentIndex());
+    sets->setCfgID(RANGE_ID,  measRange->currentIndex());
     sets->setCfgID(MEAS_RATE_ID, measRate->currentIndex());
+    sets->setCfgID(TRIG_SRC_ID,  trigSource->currentIndex());
     sets->setCfgID(TRIG_CNT_ID,  trigCount->value());
     sets->setCfgID(TRIG_DEL_ID,  trigDelay->value());
     sets->setCfgID(SAMP_ID,  trigSamples->value());
