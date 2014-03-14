@@ -168,6 +168,16 @@ Settings::Settings()
     sets[idx].defVal.id = 0;
     sets[idx].cfgVal.id = 0;
 
+    idx = TRIG_CNT_ID;
+    sets[idx].name      = "trigc";
+    sets[idx].lblText   = tr("Trigger Count");
+    sets[idx].dispType  = DISP_NONE;
+    sets[idx].valType   = VAL_INTS;
+    sets[idx].values.ints = QVector<int>() << 1 << 5000;
+    sets[idx].cfgType   = CFG_INT;
+    sets[idx].defVal.id = 1;
+    sets[idx].cfgVal.id = 1;
+
     idx = SAMP_ID;
     sets[idx].name      = "sampl";
     sets[idx].lblText   = tr("Samples");

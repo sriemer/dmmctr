@@ -69,6 +69,8 @@ MainWindow::MainWindow()
     trigLayout         = new QGridLayout;
     trigSourceLbl      = new QLabel;
     trigSource         = new QComboBox;
+    trigCountLbl       = new QLabel;
+    trigCount          = new QSpinBox;
     trigSamplesLbl     = new QLabel;
     trigSamples        = new QSpinBox;
     genDispLbl         = new QLabel;
@@ -210,8 +212,10 @@ void MainWindow::initLayout()
 
     trigLayout->addWidget(trigSourceLbl, 0, 0, 1, 2, Qt::AlignBottom);
     trigLayout->addWidget(trigSource, 1, 0, Qt::AlignTop);
-    trigLayout->addWidget(trigSamplesLbl, 2, 0, Qt::AlignBottom);
-    trigLayout->addWidget(trigSamples, 3, 0, Qt::AlignTop);
+    trigLayout->addWidget(trigCountLbl, 2, 0, Qt::AlignBottom);
+    trigLayout->addWidget(trigCount, 3, 0, Qt::AlignTop);
+    trigLayout->addWidget(trigSamplesLbl, 4, 0, Qt::AlignBottom);
+    trigLayout->addWidget(trigSamples, 5, 0, Qt::AlignTop);
     trigLayout->addWidget(genDispLbl, 0, 1, 1, 2, Qt::AlignBottom);
     trigLayout->addWidget(genDisp, 1, 1, Qt::AlignTop);
     trigWidget->setLayout(trigLayout);
@@ -281,6 +285,8 @@ void MainWindow::initControls()
     updateRange(measRate->currentIndex());
 
     sets->initComboBox(TRIG_SRC_ID, trigSourceLbl, trigSource);
+
+    sets->initSpinBox(TRIG_CNT_ID, trigCountLbl, trigCount);
 
     sets->initSpinBox(SAMP_ID, trigSamplesLbl, trigSamples);
 
@@ -502,6 +508,7 @@ void MainWindow::start()
     sets->setCfgID(INTEGR_ID, measIntegrTime->currentIndex());
     sets->setCfgID(AUTOZ_ID,  measAutoZero->currentIndex());
     sets->setCfgID(MEAS_RATE_ID, measRate->currentIndex());
+    sets->setCfgID(TRIG_CNT_ID,  trigCount->value());
     sets->setCfgID(SAMP_ID,  trigSamples->value());
     sets->setCfgID(DISP_ID,  genDisp->currentIndex());
 
