@@ -49,24 +49,28 @@ DMMControl::~DMMControl()
 
 void DMMControl::run()
 {
-    int error = 0;
+    int ret = 0;
 
     while (true) {
         ready = false;
         stopRequested = false;
         while (!ready)
             sleep(1);
+
         serPort = portCtr->openPort(sets);
-        emit sendStarted();
-        if (serPort != NULL) {
-            error = initDMM();
-            retrieveDMMVal(error);
-        } else {
+        if (!serPort) {
             emit sendSetError();
+            goto stop;
         }
+        emit sendStarted();
+        ret = initDMM();
+        if (ret || stopRequested)
+            goto stop_dmm;
+        ret = retrieveDMMVal();
 
+stop_dmm:
         stopDMMCtr();
-
+stop:
         emit sendStopped();
         emit sendEnable();
     }
@@ -79,11 +83,15 @@ bool DMMControl::isReady()
 
 void DMMControl::stopDMMCtr()
 {
-    if (serPort != NULL) {
-        portCtr->closePort(serPort);
-        delete serPort;
-        serPort = NULL;
-    }
+    if (!serPort)
+        return;
+
+    message = "DISP ON;\n";
+    send();
+
+    portCtr->closePort(serPort);
+    delete serPort;
+    serPort = NULL;
 }
 
 int DMMControl::initDMM(void)
@@ -116,16 +124,12 @@ int DMMControl::initDMM(void)
     if (ret || stopRequested)
         goto out;
 
-    // check status again (ask Tektronix why)
-    message  = DMM_SYS_ERR;
+    // deactivate beeper, configure display
+    message = "SYSTEM:ERROR:BEEPER 0;\n";
+    message.append("DISP ");
+    message.append(sets->getStringFromID(DISP_ID));
+    message.append(";\n" DMM_SYS_ERR);
     expected = DMM_SYS_EXP;
-    ret = sendAndReadBack(&expected);
-    if (ret || stopRequested)
-        goto out;
-
-    // deactivate beeper
-    message = "SYSTEM:ERROR:BEEPER 0\n" DMM_IDN;
-    expected = DMM_IDN_EXP;
     ret = sendAndReadBack(&expected);
     if (ret || stopRequested)
         goto out;
@@ -172,8 +176,9 @@ out:
     return ret;
 }
 
-int DMMControl::retrieveDMMVal(int error)
+int DMMControl::retrieveDMMVal(void)
 {
+    int ret = 0;
     QString expected;
     QRegExp expRegExp;
     QTime   startTime;
@@ -183,7 +188,7 @@ int DMMControl::retrieveDMMVal(int error)
     startTime = QTime::currentTime();
     time = QDateTime::currentMSecsSinceEpoch();  // Qt 4.7 needed
 
-    while (!error && !stopRequested) {
+    do {
         // set trigger and sample count
         message = ":TRIG:COUN ";
         message.append(sets->getCfgIntAsStr(TRIG_CNT_ID));
@@ -191,35 +196,34 @@ int DMMControl::retrieveDMMVal(int error)
         message.append(sets->getCfgIntAsStr(SAMP_ID));
         message.append(";\n" DMM_SYS_ERR);
         expected = DMM_SYS_EXP;
-        error = sendAndReadBack(&expected);
+        ret = sendAndReadBack(&expected);
+        if (ret)
+            break;
 
-        if (!error) {
-            // fetch current value
-            message = "INIT;\nFETC?\n";
-            expRegExp.setPattern("^[+-]");
-            error = sendAndReadBack(&expRegExp);
-            values.append(message);
-        }
+        // fetch current value
+        message = "INIT;\nFETC?\n";
+        expRegExp.setPattern("^[+-]");
+        ret = sendAndReadBack(&expRegExp);
+        if (ret)
+            break;
 
-        if (!error) {
-            sampleCount += sets->getCfgInt(SAMP_ID);
+        values.append(message);
+        sampleCount += sets->getCfgInt(SAMP_ID);
 
-            message = ":STAT:QUES:EVEN?\n";
-            expRegExp.setPattern("^[+-]");
-            error = sendAndReadBack(&expRegExp);
-        } else {
+        message = ":STAT:QUES:EVEN?\n";
+        expRegExp.setPattern("^[+-]");
+        ret = sendAndReadBack(&expRegExp);
+        if (ret) {
             values.removeLast();
+            break;
         }
 
-        if (!error) {
-            // check DMM status
-            message  = DMM_SYS_ERR;
-            expected = DMM_SYS_EXP;
-            error = sendAndReadBack(&expected);
-        } else {
-            values.removeLast();
-        }
-    }
+        // check DMM status
+        message  = DMM_SYS_ERR;
+        expected = DMM_SYS_EXP;
+        ret = sendAndReadBack(&expected);
+    } while (!ret && !stopRequested);
+
     time = QDateTime::currentMSecsSinceEpoch() - time;
     qDebug() << "Time diff in ms: " << time;
     duration.setNum(time);
@@ -228,27 +232,32 @@ int DMMControl::retrieveDMMVal(int error)
     qDebug() << "Values: " << values;
     emit sendResults(values);
 
-    return error;
+    return ret;
+}
+
+void DMMControl::send(void)
+{
+    serPort->write(message.toAscii(), message.length());
+    qDebug() << message;
 }
 
 template <typename T>
 int DMMControl::sendAndReadBack(T *expected, int timeout)
 {
-    int error;
+    int ret;
 
-    serPort->write(message.toAscii(), message.length());
-    qDebug() << message;
+    send();
 
     message.clear();
-    error = readPort(expected, timeout);
-    if (error == ERR_TIMEOUT) {
+    ret = readPort(expected, timeout);
+    if (ret == ERR_TIMEOUT)
         emit sendSetTimeout();
-    } else if (error != ERR_NONE) {
+    else if (ret != ERR_NONE)
         emit sendSetError();
-    }
+
     qDebug() << message;
 
-    return error;
+    return ret;
 }
 
 // QString and QRegExp are used

@@ -66,7 +66,8 @@ private:
 
     void stopDMMCtr (void);
     int  initDMM    (void);
-    int  retrieveDMMVal (int error);
+    int  retrieveDMMVal (void);
+    void send       (void);
     template <typename T>
     int  sendAndReadBack (T *expected, int timeout = RD_DEF_TIMEOUT);
     template <typename T>
