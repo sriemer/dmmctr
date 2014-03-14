@@ -69,10 +69,12 @@ MainWindow::MainWindow()
     trigLayout         = new QGridLayout;
     trigSourceLbl      = new QLabel;
     trigSource         = new QComboBox;
-    trigCountLbl       = new QLabel;
-    trigCount          = new QSpinBox;
+    trigAutoDelLbl     = new QLabel;
+    trigAutoDel        = new QComboBox;
     trigDelayLbl       = new QLabel;
     trigDelay          = new QSpinBox;
+    trigCountLbl       = new QLabel;
+    trigCount          = new QSpinBox;
     trigSamplesLbl     = new QLabel;
     trigSamples        = new QSpinBox;
     genDispLbl         = new QLabel;
@@ -214,14 +216,16 @@ void MainWindow::initLayout()
 
     trigLayout->addWidget(trigSourceLbl, 0, 0, 1, 2, Qt::AlignBottom);
     trigLayout->addWidget(trigSource, 1, 0, Qt::AlignTop);
-    trigLayout->addWidget(trigCountLbl, 2, 0, Qt::AlignBottom);
-    trigLayout->addWidget(trigCount, 3, 0, Qt::AlignTop);
+    trigLayout->addWidget(trigAutoDelLbl, 2, 0, Qt::AlignBottom);
+    trigLayout->addWidget(trigAutoDel, 3, 0, Qt::AlignTop);
     trigLayout->addWidget(trigDelayLbl, 4, 0, Qt::AlignBottom);
     trigLayout->addWidget(trigDelay, 5, 0, Qt::AlignTop);
-    trigLayout->addWidget(trigSamplesLbl, 0, 1, 1, 2, Qt::AlignBottom);
-    trigLayout->addWidget(trigSamples, 1, 1, Qt::AlignTop);
-    trigLayout->addWidget(genDispLbl, 2, 1, Qt::AlignBottom);
-    trigLayout->addWidget(genDisp, 3, 1, Qt::AlignTop);
+    trigLayout->addWidget(trigCountLbl, 0, 1, 1, 2, Qt::AlignBottom);
+    trigLayout->addWidget(trigCount, 1, 1, Qt::AlignTop);
+    trigLayout->addWidget(trigSamplesLbl, 2, 1, Qt::AlignBottom);
+    trigLayout->addWidget(trigSamples, 3, 1, Qt::AlignTop);
+    trigLayout->addWidget(genDispLbl, 4, 1, Qt::AlignBottom);
+    trigLayout->addWidget(genDisp, 5, 1, Qt::AlignTop);
     trigWidget->setLayout(trigLayout);
     dmmTabWidget->addTab(trigWidget, tr("Trigger/Samples"));
 
@@ -290,9 +294,11 @@ void MainWindow::initControls()
 
     sets->initComboBox(TRIG_SRC_ID, trigSourceLbl, trigSource);
 
-    sets->initSpinBox(TRIG_CNT_ID, trigCountLbl, trigCount);
+    sets->initComboBox(TRIG_ADE_ID, trigAutoDelLbl, trigAutoDel);
 
     sets->initSpinBox(TRIG_DEL_ID, trigDelayLbl, trigDelay);
+
+    sets->initSpinBox(TRIG_CNT_ID, trigCountLbl, trigCount);
 
     sets->initSpinBox(SAMP_ID, trigSamplesLbl, trigSamples);
 
@@ -518,8 +524,9 @@ void MainWindow::start()
     sets->setCfgID(RANGE_ID,  measRange->currentIndex());
     sets->setCfgID(MEAS_RATE_ID, measRate->currentIndex());
     sets->setCfgID(TRIG_SRC_ID,  trigSource->currentIndex());
-    sets->setCfgID(TRIG_CNT_ID,  trigCount->value());
+    sets->setCfgID(TRIG_ADE_ID,  trigAutoDel->currentIndex());
     sets->setCfgID(TRIG_DEL_ID,  trigDelay->value());
+    sets->setCfgID(TRIG_CNT_ID,  trigCount->value());
     sets->setCfgID(SAMP_ID,  trigSamples->value());
     sets->setCfgID(DISP_ID,  genDisp->currentIndex());
 

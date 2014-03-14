@@ -98,10 +98,12 @@ private:
     QGridLayout  *trigLayout;
     QLabel       *trigSourceLbl;
     QComboBox    *trigSource;
-    QLabel       *trigCountLbl;
-    QSpinBox     *trigCount;
+    QLabel       *trigAutoDelLbl;
+    QComboBox    *trigAutoDel;
     QLabel       *trigDelayLbl;
     QSpinBox     *trigDelay;
+    QLabel       *trigCountLbl;
+    QSpinBox     *trigCount;
     QLabel       *trigSamplesLbl;
     QSpinBox     *trigSamples;
     QLabel       *genDispLbl;

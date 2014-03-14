@@ -168,13 +168,14 @@ Settings::Settings()
     sets[idx].defVal.id = 0;
     sets[idx].cfgVal.id = 0;
 
-    idx = TRIG_CNT_ID;
-    sets[idx].name      = "trigc";
-    sets[idx].lblText   = tr("Trigger Count");
-    sets[idx].dispType  = DISP_NONE;
-    sets[idx].valType   = VAL_INTS;
-    sets[idx].values.ints = QVector<int>() << 1 << 50000;
-    sets[idx].cfgType   = CFG_INT;
+    idx = TRIG_ADE_ID;
+    sets[idx].name      = "adel";
+    sets[idx].lblText   = tr("Auto Delay");
+    sets[idx].dispType  = DISP_STRINGS;
+    sets[idx].dispVals.strings = QStringList() << tr("Off") << tr("On");
+    sets[idx].valType   = VAL_STRINGS;
+    sets[idx].values.strings = QStringList() << "OFF" << "ON";
+    sets[idx].cfgType   = CFG_ID;
     sets[idx].defVal.id = 1;
     sets[idx].cfgVal.id = 1;
 
@@ -187,6 +188,16 @@ Settings::Settings()
     sets[idx].cfgType   = CFG_INT;
     sets[idx].defVal.id = 0;
     sets[idx].cfgVal.id = 0;
+
+    idx = TRIG_CNT_ID;
+    sets[idx].name      = "trigc";
+    sets[idx].lblText   = tr("Trigger Count");
+    sets[idx].dispType  = DISP_NONE;
+    sets[idx].valType   = VAL_INTS;
+    sets[idx].values.ints = QVector<int>() << 1 << 50000;
+    sets[idx].cfgType   = CFG_INT;
+    sets[idx].defVal.id = 1;
+    sets[idx].cfgVal.id = 1;
 
     idx = SAMP_ID;
     sets[idx].name      = "sampl";
