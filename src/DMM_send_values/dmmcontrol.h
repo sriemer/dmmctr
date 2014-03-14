@@ -18,7 +18,6 @@
 #include <qextserialport.h>
 
 #include "../settings.h"
-#include "../config.h"
 #include "../serialportctr.h"
 
 enum DMMErrorType {
@@ -33,9 +32,8 @@ class DMMControl : public QThread
     Q_OBJECT
 
 public:
-    DMMControl(SerialPortCtr *portControl, Settings *sets, Config *config);
+    DMMControl(SerialPortCtr *portControl, Settings *sets);
     ~DMMControl();
-    void setConfig(Config *config);
     void run();
     bool isReady();
 
@@ -58,7 +56,6 @@ private:
     QextSerialPort *serPort;
     SerialPortCtr  *portCtr;
     Settings *sets;
-    Config   *cfg;
     QString message;
     int     timeout;
     bool    stopRequested;

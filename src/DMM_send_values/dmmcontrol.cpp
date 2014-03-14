@@ -35,13 +35,12 @@
 #define DMM_STAT_STR  "+8192"
 
 
-DMMControl::DMMControl(SerialPortCtr *portControl, Settings *settings, Config *config)
+DMMControl::DMMControl(SerialPortCtr *portControl, Settings *settings)
 {
     qDebug() << "DMMControl created";
     serPort = NULL;
     portCtr = portControl;
     sets = settings;
-    cfg = config;
     stopRequested = false;
     ready = false;
     timeout = RD_DEF_TIMEOUT;
@@ -50,11 +49,6 @@ DMMControl::DMMControl(SerialPortCtr *portControl, Settings *settings, Config *c
 DMMControl::~DMMControl()
 {
     stopDMMCtr();
-}
-
-void DMMControl::setConfig(Config *config)
-{
-    cfg = config;
 }
 
 void DMMControl::run()
@@ -66,7 +60,7 @@ void DMMControl::run()
         stopRequested = false;
         while (!ready)
             sleep(1);
-        serPort = portCtr->openPort(sets, cfg);
+        serPort = portCtr->openPort(sets);
         emit sendStarted();
         if (serPort != NULL) {
             error = emulateDMM(error);

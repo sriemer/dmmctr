@@ -16,7 +16,6 @@
 
 #include <QMainWindow>
 #include "../settings.h"
-#include "../config.h"
 #include "../serialportctr.h"
 #include "dmmcontrol.h"
 #include "../ledindicator.h"
@@ -86,7 +85,6 @@ private:
 
     SerialPortCtr *portCtr;
     Settings      *sets;
-    Config        *cfg;
     DMMControl    *dmmCtr;
     bool          started;
 

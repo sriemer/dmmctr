@@ -15,7 +15,6 @@
 
 #include "mainwindow.h"
 #include "../settings.h"
-#include "../config.h"
 #include "../serialportctr.h"
 #include "dmmcontrol.h"
 
@@ -23,6 +22,10 @@
     #undef PROG_NAME
 #endif
 #define PROG_NAME "DMM_send_values"
+#ifdef PROG_VERSION
+    #undef PROG_VERSION
+#endif
+#define PROG_VERSION "1.0.0"
 
 MainWindow::MainWindow()
 {
@@ -56,7 +59,6 @@ MainWindow::MainWindow()
     answerDisplay      = new QTextBrowser;
 
     sets     = new Settings();
-    cfg      = new Config();
     started  = false;
 
     initThreads();
@@ -77,7 +79,7 @@ void MainWindow::initThreads()
     connect(portCtr, SIGNAL(sendPortsDetected()), this, SLOT(portsDetected()));
     portCtr->start();
 
-    dmmCtr = new DMMControl(portCtr, sets, cfg);
+    dmmCtr = new DMMControl(portCtr, sets);
     connect(portCtr, SIGNAL(sendPortsReady()), dmmCtr, SLOT(setReady()));
     connect(dmmCtr, SIGNAL(sendSetTimeout()), this, SLOT(setTimeout()));
     connect(dmmCtr, SIGNAL(sendClearTimeout()), this, SLOT(clearTimeout()));
@@ -214,30 +216,21 @@ void MainWindow::initPortControls()
     portLabel->setText(tr("DMM Port"));
     portLabel->setAlignment(Qt::AlignBottom);
 
-    baudLabel->setText(tr("Baud Rate"));
+
+    sets->initComboBox(BAUD_ID, baudLabel, baudComboBox);
     baudLabel->setAlignment(Qt::AlignBottom);
-    baudComboBox->addItems(sets->baudRates);
-    baudComboBox->setCurrentIndex(cfg->getID(BAUD_ID));
 
-    flowLabel->setText(tr("Flow Control"));
+    sets->initComboBox(FLOW_ID, flowLabel, flowComboBox);
     flowLabel->setAlignment(Qt::AlignBottom);
-    flowComboBox->addItems(sets->flowCtrs);
-    flowComboBox->setCurrentIndex(cfg->getID(FLOW_ID));
 
-    parityLabel->setText(tr("Parity"));
+    sets->initComboBox(PARITY_ID, parityLabel, parityComboBox);
     parityLabel->setAlignment(Qt::AlignBottom);
-    parityComboBox->addItems(sets->parities);
-    parityComboBox->setCurrentIndex(cfg->getID(PARITY_ID));
 
-    dataBitsLabel->setText(tr("Data Bits"));
+    sets->initComboBox(DATA_BITS_ID, dataBitsLabel, dataBitsComboBox);
     dataBitsLabel->setAlignment(Qt::AlignBottom);
-    dataBitsComboBox->addItems(sets->dataBits);
-    dataBitsComboBox->setCurrentIndex(cfg->getID(DATA_BITS_ID));
 
-    stopBitsLabel->setText(tr("Stop Bits"));
+    sets->initComboBox(STOP_BITS_ID, stopBitsLabel, stopBitsComboBox);
     stopBitsLabel->setAlignment(Qt::AlignBottom);
-    stopBitsComboBox->addItems(sets->stopBits);
-    stopBitsComboBox->setCurrentIndex(cfg->getID(STOP_BITS_ID));
 }
 
 
@@ -247,7 +240,7 @@ void MainWindow::initPorts(QStringList portNames)
 {
     qDebug() << "MainWindow::initPorts() received";
     portComboBox->addItems(portNames);
-    portComboBox->setCurrentIndex(cfg->getID(PORT_ID));
+    portComboBox->setCurrentIndex(sets->getCfgID(PORT_ID));
 }
 
 void MainWindow::reinitPorts(QStringList portNames)
@@ -354,12 +347,14 @@ void MainWindow::start()
     startButton->setEnabled(false);
     portGroup->setEnabled(false);
 
-    cfg->setIDs(QVector<int>() << portComboBox->currentIndex()
-        << baudComboBox->currentIndex() << flowComboBox->currentIndex()
-        << parityComboBox->currentIndex() << dataBitsComboBox->currentIndex()
-        << stopBitsComboBox->currentIndex() << 0 << 0 << 0 << 0 << 0 << 0);
+    // Port config
+    sets->setCfgID(PORT_ID,   portComboBox->currentIndex());
+    sets->setCfgID(BAUD_ID,   baudComboBox->currentIndex());
+    sets->setCfgID(FLOW_ID,   flowComboBox->currentIndex());
+    sets->setCfgID(PARITY_ID, parityComboBox->currentIndex());
+    sets->setCfgID(DATA_BITS_ID, dataBitsComboBox->currentIndex());
+    sets->setCfgID(STOP_BITS_ID, stopBitsComboBox->currentIndex());
 
-    dmmCtr->setConfig(cfg);
     emit timeoutIndicat->setOff();
     emit errorIndicat->setOff();
     emit portCtr->disable();
