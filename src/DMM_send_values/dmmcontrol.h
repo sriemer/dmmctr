@@ -62,7 +62,7 @@ private:
     bool    ready;
 
     void stopDMMCtr (void);
-    int  emulateDMM (int error);
+    int  emulateDMM (void);
     int  readAndSendBack (QList<QRegExp> *expected, QStringList *answers,
                           QString term);
     int  readPort   (void);

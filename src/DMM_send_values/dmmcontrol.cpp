@@ -53,23 +53,21 @@ DMMControl::~DMMControl()
 
 void DMMControl::run()
 {
-    int error = 0;
-
     while (true) {
         ready = false;
         stopRequested = false;
         while (!ready)
             sleep(1);
         serPort = portCtr->openPort(sets);
-        emit sendStarted();
-        if (serPort != NULL) {
-            error = emulateDMM(error);
-        } else {
-            emit sendSetError();
+        if (!serPort) {
+            sendSetError();
+            goto stop;
         }
+        emit sendStarted();
+        emulateDMM();
 
         stopDMMCtr();
-
+stop:
         emit sendStopped();
         emit sendEnable();
     }
@@ -80,17 +78,20 @@ bool DMMControl::isReady()
     return ready;
 }
 
-void DMMControl::stopDMMCtr()
+void DMMControl::stopDMMCtr(void)
 {
-    if (serPort != NULL) {
-        portCtr->closePort(serPort);
-        delete serPort;
-        serPort = NULL;
-    }
+    if (!serPort)
+        return;
+
+    portCtr->closePort(serPort);
+    delete serPort;
+    serPort = NULL;
 }
 
-int DMMControl::emulateDMM(int error)
+int DMMControl::emulateDMM(void)
 {
+    int ret = 0;
+
     QList<QRegExp> knownCommads(QList<QRegExp>() << DMM_OPC << DMM_IDN
                                 << DMM_SYS_ERR << DMM_FETC << DMM_STAT);
     QStringList answers(QStringList() << DMM_OPC_STR << DMM_IDN_STR
@@ -99,15 +100,15 @@ int DMMControl::emulateDMM(int error)
     QString voltStr;
 
     qsrand(1234567);
-    while (!error && !stopRequested) {
+    do {
         voltage = ((double) qrand() / (double) RAND_MAX - 0.5) / 10000;
         voltage += DMM_FETC_DBL;
         voltStr.setNum(voltage, 'f', 6);
         answers.replace(3, voltStr);
-        error = readAndSendBack(&knownCommads, &answers, "\r\n");
-    }
+        ret = readAndSendBack(&knownCommads, &answers, "\r\n");
+    } while (!ret && !stopRequested);
 
-    return error;
+    return ret;
 }
 
 int DMMControl::readAndSendBack(QList<QRegExp> *expected, QStringList *answers,
@@ -149,7 +150,7 @@ int DMMControl::readAndSendBack(QList<QRegExp> *expected, QStringList *answers,
     return error;
 }
 
-int DMMControl::readPort()
+int DMMControl::readPort(void)
 {
     char buff[RD_BUFF_SIZE];
     int  numBytes;

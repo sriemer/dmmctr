@@ -199,13 +199,8 @@ void MainWindow::initControls()
 
     commandLabel->setText(tr("Command"));
     answerLabel->setText(tr("Answer"));
-//#ifdef Q_OS_WIN
-//    commandDisplay->setMaximumSize(progCtrFrame->width(), 90);
-//    answerDisplay->setMaximumSize(progCtrFrame->width(), 90);
-//#else
     commandDisplay->setMaximumSize(progCtrFrame->sizeHint().width(), 90);
     answerDisplay->setMaximumSize(progCtrFrame->sizeHint().width(), 90);
-//#endif
 }
 
 void MainWindow::initPortControls()
@@ -215,7 +210,6 @@ void MainWindow::initPortControls()
 
     portLabel->setText(tr("DMM Port"));
     portLabel->setAlignment(Qt::AlignBottom);
-
 
     sets->initComboBox(BAUD_ID, baudLabel, baudComboBox);
     baudLabel->setAlignment(Qt::AlignBottom);
@@ -281,6 +275,7 @@ void MainWindow::portsDetected()
     qDebug() << "MainWindow::portsDetected() received";
     if (!started) {
         startButton->setEnabled(true);
+        portGroup->setEnabled(true);
     }
 }
 
@@ -346,6 +341,8 @@ void MainWindow::start()
     started = true;
     startButton->setEnabled(false);
     portGroup->setEnabled(false);
+    commandDisplay->clear();
+    answerDisplay->clear();
 
     // Port config
     sets->setCfgID(PORT_ID,   portComboBox->currentIndex());

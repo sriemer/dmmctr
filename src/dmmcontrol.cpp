@@ -86,7 +86,7 @@ void DMMControl::stopDMMCtr(void)
     if (!serPort)
         return;
 
-    message = "DISP ON;\n";
+    message = "DISP ON\n";
     send();
 
     portCtr->closePort(serPort);
