@@ -81,7 +81,7 @@ bool DMMControl::isReady()
     return ready;
 }
 
-void DMMControl::stopDMMCtr()
+void DMMControl::stopDMMCtr(void)
 {
     if (!serPort)
         return;
