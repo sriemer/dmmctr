@@ -191,7 +191,10 @@ int DMMControl::retrieveDMMVal(void)
     do {
         // set trigger and sample count
         message = ":TRIG:COUN ";
-        message.append(sets->getCfgIntAsStr(TRIG_CNT_ID));
+        if (sets->getCfgInt(TRIG_CNT_ID) < 1)
+            message.append("INF");
+        else
+            message.append(sets->getCfgIntAsStr(TRIG_CNT_ID));
         message.append(";:SAMP:COUN ");
         message.append(sets->getCfgIntAsStr(SAMP_ID));
         message.append(";\n" DMM_SYS_ERR);

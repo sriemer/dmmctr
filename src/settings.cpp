@@ -196,7 +196,7 @@ Settings::Settings()
     sets[idx].lblText   = tr("Trigger Count");
     sets[idx].dispType  = DISP_NONE;
     sets[idx].valType   = VAL_INTS;
-    sets[idx].values.ints = QVector<int>() << 1 << 50000;
+    sets[idx].values.ints = QVector<int>() << -1 << 50000;  // -1 or 0 for INF
     sets[idx].cfgType   = CFG_INT;
     sets[idx].defVal.id = 1;
     sets[idx].cfgVal.id = 1;
