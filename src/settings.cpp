@@ -45,7 +45,7 @@ Settings::Settings()
         << "9600" << "19200" << "38400" << "57600" << "115200" << "230400";
     sets[idx].valType   = VAL_BAUD;
     sets[idx].values.baudIDs = QVector<BaudRateType>() << BAUD1200 << BAUD2400 << BAUD4800
-        << BAUD9600 << BAUD19200 << BAUD38400 << BAUD57600 << BAUD115200 << BAUD230400;
+        << BAUD9600 << BAUD19200 << BAUD38400 << BAUD57600 << BAUD115200 << (BaudRateType) 230400;
     // 230400 may not be available on your serial port driver on Windows and may require
     // custom changes to QextSerialPort as 230400 is non-standard.
     sets[idx].cfgType   = CFG_ID;
