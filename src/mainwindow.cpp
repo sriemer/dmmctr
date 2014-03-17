@@ -220,12 +220,12 @@ void MainWindow::initLayout()
     trigLayout->addWidget(trigAutoDel, 3, 0, Qt::AlignTop);
     trigLayout->addWidget(trigDelayLbl, 4, 0, Qt::AlignBottom);
     trigLayout->addWidget(trigDelay, 5, 0, Qt::AlignTop);
-    trigLayout->addWidget(trigCountLbl, 0, 1, 1, 2, Qt::AlignBottom);
-    trigLayout->addWidget(trigCount, 1, 1, Qt::AlignTop);
-    trigLayout->addWidget(trigSamplesLbl, 2, 1, Qt::AlignBottom);
-    trigLayout->addWidget(trigSamples, 3, 1, Qt::AlignTop);
-    trigLayout->addWidget(genDispLbl, 4, 1, Qt::AlignBottom);
-    trigLayout->addWidget(genDisp, 5, 1, Qt::AlignTop);
+    trigLayout->addWidget(genDispLbl, 0, 1, 1, 2, Qt::AlignBottom);
+    trigLayout->addWidget(genDisp, 1, 1, Qt::AlignTop);
+    trigLayout->addWidget(trigCountLbl, 2, 1, Qt::AlignBottom);
+    trigLayout->addWidget(trigCount, 3, 1, Qt::AlignTop);
+    trigLayout->addWidget(trigSamplesLbl, 4, 1, Qt::AlignBottom);
+    trigLayout->addWidget(trigSamples, 5, 1, Qt::AlignTop);
     trigWidget->setLayout(trigLayout);
     dmmTabWidget->addTab(trigWidget, tr("Trigger/Samples"));
 
