@@ -137,24 +137,22 @@ Settings::Settings()
     sets[idx].lblText   = tr("Range");
     sets[idx].dispType  = DISP_SL_VEC;
     sets[idx].dispVals.slVec = QVector<QStringList>()
-        << (QStringList() << "100 mV" << "1000 mV" << "10 V" << "100 V" << "1000 V")
-        << (QStringList() << "300 mV" << "3000 mV" << "30 V" << "300 V" << "1000 V");
+        << (QStringList() << tr("auto") << "100 mV" << "1 V" << "10 V" << "100 V" << "1000 V");
     sets[idx].valType   = VAL_STRINGS;
-    sets[idx].values.strings = QStringList() << "1" << "2" << "3" << "4" << "5";
+    sets[idx].values.strings = QStringList() << "DEF" << "0.1" << "1" << "10" << "100" << "1000";
     sets[idx].cfgType    = CFG_ID;
     sets[idx].defVal.id  = 0;
     sets[idx].defVal.id2 = 0;
     sets[idx].cfgVal.id  = 0;
     sets[idx].cfgVal.id2 = 0;
 
-    idx = MEAS_RATE_ID;
-    sets[idx].name      = "rate";
-    sets[idx].lblText   = tr("Rate");
+    idx = RESOL_ID;
+    sets[idx].name      = "resol";
+    sets[idx].lblText   = tr("Resolution");
     sets[idx].dispType  = DISP_STRINGS;
-    sets[idx].dispVals.strings = QStringList() << tr("Slow (2.5/s)") << tr("Medium (5/s)")
-        << tr("Fast (20/s)");
+    sets[idx].dispVals.strings = QStringList() << tr("default") << tr("min") << tr("max");
     sets[idx].valType   = VAL_STRINGS;
-    sets[idx].values.strings = QStringList() << "S" << "M" << "F";
+    sets[idx].values.strings = QStringList() << "DEF" << "MIN" << "MAX";
     sets[idx].cfgType   = CFG_ID;
     sets[idx].defVal.id = 0;
     sets[idx].cfgVal.id = 0;

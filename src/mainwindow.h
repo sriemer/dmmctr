@@ -92,8 +92,8 @@ private:
     QComboBox    *measAutoZero;
     QLabel       *measRangeLbl;
     QComboBox    *measRange;
-    QLabel       *measRateLbl;
-    QComboBox    *measRate;
+    QLabel       *measResolLbl;
+    QComboBox    *measResol;
     QWidget      *trigWidget;
     QGridLayout  *trigLayout;
     QLabel       *trigSourceLbl;
@@ -138,9 +138,6 @@ private slots:
     void selectCsvApp    (void);
     void selectXls       (void);
     void clearExportText (void);
-
-    // DMM ctr actions
-    void updateRange     (int rateIdx);
 };
 
 #endif

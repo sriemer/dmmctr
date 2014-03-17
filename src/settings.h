@@ -37,7 +37,7 @@ typedef enum {
     INTEGR_ID,
     AUTOZ_ID,
     RANGE_ID,
-    MEAS_RATE_ID,
+    RESOL_ID,
     TRIG_SRC_ID,
     TRIG_ADE_ID,
     TRIG_DEL_ID,

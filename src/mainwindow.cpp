@@ -63,8 +63,8 @@ MainWindow::MainWindow()
     measAutoZero       = new QComboBox;
     measRangeLbl       = new QLabel;
     measRange          = new QComboBox;
-    measRateLbl        = new QLabel;
-    measRate           = new QComboBox;
+    measResolLbl       = new QLabel;
+    measResol          = new QComboBox;
     trigWidget         = new QWidget;
     trigLayout         = new QGridLayout;
     trigSourceLbl      = new QLabel;
@@ -209,8 +209,8 @@ void MainWindow::initLayout()
     measLayout->addWidget(measAutoZero, 5, 0, Qt::AlignTop);
     measLayout->addWidget(measRangeLbl, 0, 1, 1, 2, Qt::AlignBottom);
     measLayout->addWidget(measRange, 1, 1, Qt::AlignTop);
-    measLayout->addWidget(measRateLbl, 2, 1, Qt::AlignBottom);
-    measLayout->addWidget(measRate, 3, 1, Qt::AlignTop);
+    measLayout->addWidget(measResolLbl, 2, 1, Qt::AlignBottom);
+    measLayout->addWidget(measResol, 3, 1, Qt::AlignTop);
     measWidget->setLayout(measLayout);
     dmmTabWidget->addTab(measWidget, tr("Measurement"));
 
@@ -286,11 +286,7 @@ void MainWindow::initControls()
 
     sets->initComboBox(RANGE_ID, measRangeLbl, measRange);
 
-    sets->initComboBox(MEAS_RATE_ID, measRateLbl, measRate);
-
-    // Range depends on rate
-    connect(measRate, SIGNAL(currentIndexChanged(int)), this, SLOT(updateRange(int)));
-    updateRange(measRate->currentIndex());
+    sets->initComboBox(RESOL_ID, measResolLbl, measResol);
 
     sets->initComboBox(TRIG_SRC_ID, trigSourceLbl, trigSource);
 
@@ -522,7 +518,7 @@ void MainWindow::start()
     sets->setCfgID(INTEGR_ID, measIntegrTime->currentIndex());
     sets->setCfgID(AUTOZ_ID,  measAutoZero->currentIndex());
     sets->setCfgID(RANGE_ID,  measRange->currentIndex());
-    sets->setCfgID(MEAS_RATE_ID, measRate->currentIndex());
+    sets->setCfgID(RESOL_ID,  measResol->currentIndex());
     sets->setCfgID(TRIG_SRC_ID,  trigSource->currentIndex());
     sets->setCfgID(TRIG_ADE_ID,  trigAutoDel->currentIndex());
     sets->setCfgID(TRIG_DEL_ID,  trigDelay->value());
@@ -594,22 +590,4 @@ void MainWindow::selectXls()
 void MainWindow::clearExportText()
 {
     exportLineEdit->clear();
-}
-
-// DMM ComboBox event
-void MainWindow::updateRange(int rateIdx)
-{
-    int rangeSetID = sets->getCfgID2(RANGE_ID);
-    int newRangeSetID = 0;
-
-    if (rateIdx != 0)  // not slow ?
-        newRangeSetID = 1;
-
-    if (rangeSetID == newRangeSetID)
-        return;
-
-    sets->setCfgID2(RANGE_ID, newRangeSetID);
-    sets->setCfgID(RANGE_ID, measRange->currentIndex());
-    measRange->clear();
-    sets->initComboBox(RANGE_ID, measRange);
 }
