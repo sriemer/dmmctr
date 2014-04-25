@@ -27,6 +27,13 @@ enum DMMErrorType {
     ERR_UNWANTED
 };
 
+class RqEntry
+{
+public:
+    QRegExp     request;
+    QString     answer;
+};
+
 class DMMControl : public QThread
 {
     Q_OBJECT
@@ -56,16 +63,18 @@ private:
     QextSerialPort *serPort;
     SerialPortCtr  *portCtr;
     Settings *sets;
+    QVector<RqEntry> rqs;
     QString message;
     int     timeout;
     bool    stopRequested;
     bool    ready;
 
-    void stopDMMCtr (void);
-    int  emulateDMM (void);
-    int  readAndSendBack (QList<QRegExp> *expected, QStringList *answers,
-                          QString term);
-    int  readPort   (void);
+    void initRequests (void);
+    void stopDMMCtr   (void);
+    int  emulateDMM   (void);
+    void handleFetch  (void);
+    int  readAndSendBack (QString term);
+    int  readPort     (void);
 };
 
 #endif

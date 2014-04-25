@@ -21,34 +21,59 @@
 #define RD_POLL_RATE     50  // ms
 #define RD_DEF_TIMEOUT 1000  // ms
 
-#define DMM_OPC       static_cast<QRegExp>(".*\\*OPC\\?*")
-#define DMM_IDN       static_cast<QRegExp>(".*\\*IDN\\?*")
-#define DMM_SYS_ERR   static_cast<QRegExp>(".*:SYST:ERR\\?*")
-#define DMM_FETC      static_cast<QRegExp>(".*FETC\\?*")
-#define DMM_STAT      static_cast<QRegExp>(".*:STAT:QUES:EVEN\\?*")
-
-#define DMM_OPC_STR   "1"
-#define DMM_IDN_STR   "TEKTRONIX,DMM4050,1555202,08/02/10-11:53"
-#define DMM_SYS_STR   "+0,\"No error\""
-#define DMM_FETC_STR  "-0.000200"
 #define DMM_FETC_DBL  -0.000200
-#define DMM_STAT_STR  "+8192"
+
+typedef enum {
+    OPC_ID,
+    IDN_ID,
+    SYS_ERR_ID,
+    FETC_ID,
+    STAT_ID,
+    RQS_SIZE  // always the last entry
+} RequestIDType;
 
 
 DMMControl::DMMControl(SerialPortCtr *portControl, Settings *settings)
 {
-    qDebug() << "DMMControl created";
     serPort = NULL;
     portCtr = portControl;
     sets = settings;
     stopRequested = false;
     ready = false;
     timeout = RD_DEF_TIMEOUT;
+    initRequests();
+    qDebug() << "DMMControl created";
 }
 
 DMMControl::~DMMControl()
 {
     stopDMMCtr();
+}
+
+void DMMControl::initRequests(void)
+{
+    int idx;
+    rqs = QVector<RqEntry>(RQS_SIZE);
+
+    idx = OPC_ID;
+    rqs[idx].request = static_cast<QRegExp>(".*\\*OPC\\?*");
+    rqs[idx].answer = "1";
+
+    idx = IDN_ID;
+    rqs[idx].request = static_cast<QRegExp>(".*\\*IDN\\?*");
+    rqs[idx].answer = "TEKTRONIX,DMM4050,1555202,08/02/10-11:53";
+
+    idx = SYS_ERR_ID;
+    rqs[idx].request = static_cast<QRegExp>(".*:SYST:ERR\\?*");
+    rqs[idx].answer = "+0,\"No error\"";
+
+    idx = FETC_ID;
+    rqs[idx].request = static_cast<QRegExp>(".*FETC\\?*");
+    rqs[idx].answer = "-0.000200";
+
+    idx = STAT_ID;
+    rqs[idx].request = static_cast<QRegExp>(".*:STAT:QUES:EVEN\\?*");
+    rqs[idx].answer = "+8192";
 }
 
 void DMMControl::run()
@@ -92,27 +117,26 @@ int DMMControl::emulateDMM(void)
 {
     int ret = 0;
 
-    QList<QRegExp> knownCommads(QList<QRegExp>() << DMM_OPC << DMM_IDN
-                                << DMM_SYS_ERR << DMM_FETC << DMM_STAT);
-    QStringList answers(QStringList() << DMM_OPC_STR << DMM_IDN_STR
-                        << DMM_SYS_STR << DMM_FETC_STR << DMM_STAT_STR);
-    double voltage;
-    QString voltStr;
-
     qsrand(1234567);
     do {
-        voltage = ((double) qrand() / (double) RAND_MAX - 0.5) / 10000;
-        voltage += DMM_FETC_DBL;
-        voltStr.setNum(voltage, 'f', 6);
-        answers.replace(3, voltStr);
-        ret = readAndSendBack(&knownCommads, &answers, "\r\n");
+        ret = readAndSendBack("\r\n");
     } while (!ret && !stopRequested);
 
     return ret;
 }
 
-int DMMControl::readAndSendBack(QList<QRegExp> *expected, QStringList *answers,
-                                QString term)
+void DMMControl::handleFetch(void)
+{
+    double voltage;
+    QString voltStr;
+
+    voltage = DMM_FETC_DBL;
+    voltage += ((double) qrand() / (double) RAND_MAX - 0.5) / 10000;
+    voltStr.setNum(voltage, 'f', 6);
+    rqs[FETC_ID].answer = voltStr;
+}
+
+int DMMControl::readAndSendBack(QString term)
 {
     int error;
 
@@ -130,9 +154,11 @@ int DMMControl::readAndSendBack(QList<QRegExp> *expected, QStringList *answers,
             emit sendSetError();
         }
         error = ERR_UNWANTED;
-        for (int i = 0; i < expected->length(); i++) {
-            if (message.contains(expected->at(i))) {
-                message = answers->at(i);
+        for (int i = 0; i < rqs.size(); i++) {
+            if (message.contains(rqs.at(i).request)) {
+                if (i == FETC_ID)
+                    handleFetch();
+                message = rqs.at(i).answer;
                 message.append(term);
                 serPort->write(message.toAscii(), message.length());
                 qDebug() << message;
