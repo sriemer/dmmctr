@@ -20,18 +20,41 @@
 #include "../settings.h"
 #include "../serialportctr.h"
 
-enum DMMErrorType {
+typedef enum {
     ERR_NONE,
     ERR_TIMEOUT,
     ERR_TERM,
     ERR_UNWANTED
-};
+} DMMErrorType;
 
-class RqEntry
+typedef enum {
+    // Requests
+    OPC_ID,
+    IDN_ID,
+    FETC_ID,
+    // Commands
+    CLS_ID,
+    SYST_ID,
+    RST_ID,
+    ESE_ID,
+    SRE_ID,
+    STAT_ID,
+    ZERO_ID,
+    CONF_ID,
+    VOLT_ID,
+    TRIG_ID,
+    SAMPLES_ID,
+    INIT_ID,
+    DISPLAY_ID,
+    CMDS_SIZE  // always the last entry
+} CmdIDType;
+
+class CmdEntry
 {
 public:
-    QRegExp     request;
-    QString     answer;
+    QString cmd;
+    QString answer;
+    QVector<CmdEntry> *subcmds;
 };
 
 class DMMControl : public QThread
@@ -63,18 +86,21 @@ private:
     QextSerialPort *serPort;
     SerialPortCtr  *portCtr;
     Settings *sets;
-    QVector<RqEntry> rqs;
+    QVector<CmdEntry> cmds;
     QString message;
     int     timeout;
     bool    stopRequested;
     bool    ready;
 
     void initRequests (void);
+    void initCmds     (void);
     void stopDMMCtr   (void);
     int  emulateDMM   (void);
+    int  readAndSendBack   (void);
+    DMMErrorType readPort  (void);
+    DMMErrorType handleCmd (CmdIDType id, QString *cmd, QString *answer);
+    DMMErrorType handleSubCmds (CmdIDType id, QString *cmd, QString *answer);
     void handleFetch  (void);
-    int  readAndSendBack (QString term);
-    int  readPort     (void);
 };
 
 #endif

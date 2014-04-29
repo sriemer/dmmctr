@@ -23,15 +23,6 @@
 
 #define DMM_FETC_DBL  -0.000200
 
-typedef enum {
-    OPC_ID,
-    IDN_ID,
-    SYS_ERR_ID,
-    FETC_ID,
-    STAT_ID,
-    RQS_SIZE  // always the last entry
-} RequestIDType;
-
 
 DMMControl::DMMControl(SerialPortCtr *portControl, Settings *settings)
 {
@@ -41,7 +32,7 @@ DMMControl::DMMControl(SerialPortCtr *portControl, Settings *settings)
     stopRequested = false;
     ready = false;
     timeout = RD_DEF_TIMEOUT;
-    initRequests();
+    initCmds();
     qDebug() << "DMMControl created";
 }
 
@@ -50,30 +41,142 @@ DMMControl::~DMMControl()
     stopDMMCtr();
 }
 
-void DMMControl::initRequests(void)
+void DMMControl::initCmds(void)
 {
     int idx;
-    rqs = QVector<RqEntry>(RQS_SIZE);
+    CmdEntry cmd_en;
+    cmds = QVector<CmdEntry>(CMDS_SIZE);
 
     idx = OPC_ID;
-    rqs[idx].request = static_cast<QRegExp>(".*\\*OPC\\?*");
-    rqs[idx].answer = "1";
+    cmds[idx].cmd = "*OPC?";
+    cmds[idx].answer = "1";
+    cmds[idx].subcmds = NULL;
 
     idx = IDN_ID;
-    rqs[idx].request = static_cast<QRegExp>(".*\\*IDN\\?*");
-    rqs[idx].answer = "TEKTRONIX,DMM4050,1555202,08/02/10-11:53";
-
-    idx = SYS_ERR_ID;
-    rqs[idx].request = static_cast<QRegExp>(".*:SYST:ERR\\?*");
-    rqs[idx].answer = "+0,\"No error\"";
+    cmds[idx].cmd = "*IDN?";
+    cmds[idx].answer = "TEKTRONIX,DMM4050,1555202,08/02/10-11:53";
+    cmds[idx].subcmds = NULL;
 
     idx = FETC_ID;
-    rqs[idx].request = static_cast<QRegExp>(".*FETC\\?*");
-    rqs[idx].answer = "-0.000200";
+    cmds[idx].cmd = "FETC?";
+    cmds[idx].answer = "-0.000200";
+    cmds[idx].subcmds = NULL;
+
+    idx = CLS_ID;
+    cmds[idx].cmd = "*CLS";
+    cmds[idx].subcmds = NULL;
+
+    idx = SYST_ID;
+    cmds[idx].cmd = "SYST";
+    cmds[idx].subcmds = new QVector<CmdEntry>();
+    cmd_en.cmd = "REM";
+    cmd_en.answer.clear();
+    cmd_en.subcmds = NULL;
+    cmds[idx].subcmds->append(cmd_en);
+    cmd_en.cmd = "ERR";
+    cmd_en.answer = "+0,\"No error\"";
+    cmd_en.subcmds = new QVector<CmdEntry>();
+    cmds[idx].subcmds->append(cmd_en);
+    cmd_en.cmd = "BEEPER";
+    cmd_en.answer.clear();
+    cmd_en.subcmds = NULL;
+    cmds[idx].subcmds->last().subcmds->append(cmd_en);
+
+    idx = RST_ID;
+    cmds[idx].cmd = "*RST";
+    cmds[idx].subcmds = NULL;
+
+    idx = ESE_ID;
+    cmds[idx].cmd = "*ESE";
+    cmds[idx].subcmds = NULL;
+
+    idx = SRE_ID;
+    cmds[idx].cmd = "*SRE";
+    cmds[idx].subcmds = NULL;
 
     idx = STAT_ID;
-    rqs[idx].request = static_cast<QRegExp>(".*:STAT:QUES:EVEN\\?*");
-    rqs[idx].answer = "+8192";
+    cmds[idx].cmd = "STAT";
+    cmds[idx].subcmds = new QVector<CmdEntry>();
+    cmd_en.cmd = "QUES";
+    cmd_en.answer.clear();
+    cmd_en.subcmds = new QVector<CmdEntry>();
+    cmds[idx].subcmds->append(cmd_en);
+    cmd_en.cmd = "ENAB";
+    cmd_en.answer.clear();
+    cmd_en.subcmds = NULL;
+    cmds[idx].subcmds->last().subcmds->append(cmd_en);
+    cmd_en.cmd = "EVEN";
+    cmd_en.answer = "+8192";
+    cmd_en.subcmds = NULL;
+    cmds[idx].subcmds->last().subcmds->append(cmd_en);
+
+    idx = ZERO_ID;
+    cmds[idx].cmd = "ZERO";
+    cmds[idx].subcmds = new QVector<CmdEntry>();
+    cmd_en.cmd = "AUTO";
+    cmd_en.answer.clear();
+    cmd_en.subcmds = NULL;
+    cmds[idx].subcmds->append(cmd_en);
+
+    idx = CONF_ID;
+    cmds[idx].cmd = "CONF";
+    cmds[idx].subcmds = new QVector<CmdEntry>();
+    cmd_en.cmd = "VOLT";
+    cmd_en.answer.clear();
+    cmd_en.subcmds = new QVector<CmdEntry>();
+    cmds[idx].subcmds->append(cmd_en);
+    cmd_en.cmd = "DC";
+    cmd_en.answer.clear();
+    cmd_en.subcmds = NULL;
+    cmds[idx].subcmds->last().subcmds->append(cmd_en);
+
+    idx = VOLT_ID;
+    cmds[idx].cmd = "VOLT";
+    cmds[idx].subcmds = new QVector<CmdEntry>();
+    cmd_en.cmd = "DC";
+    cmd_en.answer.clear();
+    cmd_en.subcmds = new QVector<CmdEntry>();
+    cmds[idx].subcmds->append(cmd_en);
+    cmd_en.cmd = "NPLC";
+    cmd_en.answer.clear();
+    cmd_en.subcmds = NULL;
+    cmds[idx].subcmds->last().subcmds->append(cmd_en);
+
+    idx = TRIG_ID;
+    cmds[idx].cmd = "TRIG";
+    cmds[idx].subcmds = new QVector<CmdEntry>();
+    cmd_en.cmd = "DEL";
+    cmd_en.answer.clear();
+    cmd_en.subcmds = new QVector<CmdEntry>();
+    cmds[idx].subcmds->append(cmd_en);
+    cmd_en.cmd = "AUTO";
+    cmd_en.answer.clear();
+    cmd_en.subcmds = NULL;
+    cmds[idx].subcmds->last().subcmds->append(cmd_en);
+    cmd_en.cmd = "SOUR";
+    cmd_en.answer.clear();
+    cmd_en.subcmds = NULL;
+    cmds[idx].subcmds->append(cmd_en);
+    cmd_en.cmd = "COUN";
+    cmd_en.answer.clear();
+    cmd_en.subcmds = NULL;
+    cmds[idx].subcmds->append(cmd_en);
+
+    idx = SAMPLES_ID;
+    cmds[idx].cmd = "SAMP";
+    cmds[idx].subcmds = new QVector<CmdEntry>();
+    cmd_en.cmd = "COUN";
+    cmd_en.answer.clear();
+    cmd_en.subcmds = NULL;
+    cmds[idx].subcmds->append(cmd_en);
+
+    idx = INIT_ID;
+    cmds[idx].cmd = "INIT";
+    cmds[idx].subcmds = NULL;
+
+    idx = DISPLAY_ID;
+    cmds[idx].cmd = "DISP";
+    cmds[idx].subcmds = NULL;
 }
 
 void DMMControl::run()
@@ -119,26 +222,18 @@ int DMMControl::emulateDMM(void)
 
     qsrand(1234567);
     do {
-        ret = readAndSendBack("\r\n");
+        ret = readAndSendBack();
     } while (!ret && !stopRequested);
 
     return ret;
 }
 
-void DMMControl::handleFetch(void)
+int DMMControl::readAndSendBack(void)
 {
-    double voltage;
-    QString voltStr;
-
-    voltage = DMM_FETC_DBL;
-    voltage += ((double) qrand() / (double) RAND_MAX - 0.5) / 10000;
-    voltStr.setNum(voltage, 'f', 6);
-    rqs[FETC_ID].answer = voltStr;
-}
-
-int DMMControl::readAndSendBack(QString term)
-{
-    int error;
+    DMMErrorType error;
+    int pos = 0, end = 0;
+    QString cmd;
+    QString answer;
 
     message.clear();
     error = readPort();
@@ -146,6 +241,7 @@ int DMMControl::readAndSendBack(QString term)
     if (error == ERR_TIMEOUT) {
         emit sendSetTimeout();
         error = ERR_NONE;
+        goto out;
     } else {
         qDebug() << message;
         emit sendClearTimeout();
@@ -153,36 +249,60 @@ int DMMControl::readAndSendBack(QString term)
             error = ERR_TERM;
             emit sendSetError();
         }
-        error = ERR_UNWANTED;
-        for (int i = 0; i < rqs.size(); i++) {
-            if (message.contains(rqs.at(i).request)) {
-                if (i == FETC_ID)
-                    handleFetch();
-                message = rqs.at(i).answer;
-                message.append(term);
-                serPort->write(message.toAscii(), message.length());
-                qDebug() << message;
-                error = ERR_NONE;
+        while (true) {
+            if (message.startsWith('\n'))
+                message.remove(0, 1);
+            if (message.startsWith(':'))
+                message.remove(0, 1);
+            if (message.isEmpty())
+                break;
+            end = message.indexOf(';');
+            pos = message.indexOf('\n');
+            if (end >= 0) {
+                if (pos >= 0 && pos < end)
+                    end = pos;
+                cmd = message.left(end);
+            } else if (pos >= 0) {
+                end = pos;
+                cmd = message.left(end);
+            } else {
+                cmd = message;
+            }
+            error = ERR_UNWANTED;
+            qDebug() << "cmd:" << cmd;
+            for (int i = 0; i < cmds.size(); i++) {
+                if (!cmd.startsWith(cmds.at(i).cmd))
+                    continue;
+                error = handleCmd((CmdIDType) i, &cmd, &answer);
                 break;
             }
+            if (error == ERR_UNWANTED) {
+                emit sendSetError();
+                //error = ERR_NONE;   // For testing only!
+                goto out;
+            }
+            if (end < 0)
+                break;
+            message.remove(0, end + 1);
         }
-        if (error == ERR_UNWANTED) {
-            emit sendSetError();
-            //error = ERR_NONE;   // For testing only!
+        if (!answer.isEmpty()) {
+            answer.append("\r\n");
+            serPort->write(answer.toAscii(), answer.length());
+            qDebug() << "answer: " << answer;
         }
     }
-    emit sendSetAnswer(message);
-
+out:
+    emit sendSetAnswer(answer);
     return error;
 }
 
-int DMMControl::readPort(void)
+DMMErrorType DMMControl::readPort(void)
 {
     char buff[RD_BUFF_SIZE];
     int  numBytes;
     int  readBytes;
     int  i = 0;
-    int  error = ERR_TIMEOUT;
+    DMMErrorType error = ERR_TIMEOUT;
 
     do {
         msleep(RD_POLL_RATE);
@@ -207,6 +327,120 @@ int DMMControl::readPort(void)
     } while (i <= (timeout / RD_POLL_RATE));
 
     return error;
+}
+
+DMMErrorType DMMControl::handleCmd(CmdIDType id, QString *cmd, QString *answer)
+{
+    DMMErrorType error = ERR_NONE;
+    QString value;
+    int pos;
+
+    pos = cmd->indexOf(' ');
+    if (pos >= 0 && pos + 1 < cmd->size()) {
+        value = cmd->right(cmd->size() - (pos + 1));
+        qDebug() << "value:" << value;
+    } else {
+        value = "";
+    }
+
+    // Is this a request?
+    switch (id) {
+    // Requests
+    case FETC_ID:
+        handleFetch();
+    case OPC_ID:
+    case IDN_ID:
+        answer->append(cmds.at(id).answer);
+        break;
+    // Regular commands
+    case STAT_ID:
+    case SYST_ID:
+    case ZERO_ID:
+    case CONF_ID:
+    case VOLT_ID:
+    case TRIG_ID:
+    case SAMPLES_ID:
+        error = handleSubCmds(id, cmd, answer);
+        break;
+    case CLS_ID:
+    case RST_ID:
+    case ESE_ID:
+    case SRE_ID:
+    case INIT_ID:
+        break;
+    case DISPLAY_ID:
+        if (value.startsWith("ON", Qt::CaseInsensitive))
+            break;
+        else if (value.startsWith("OFF", Qt::CaseInsensitive))
+            break;
+        else
+            error = ERR_UNWANTED;
+        break;
+    default:
+        error = ERR_UNWANTED;
+        break;
+    }
+    return error;
+}
+
+DMMErrorType DMMControl::handleSubCmds(CmdIDType id, QString *cmd, QString *answer)
+{
+    DMMErrorType error = ERR_UNWANTED;
+    QVector<CmdEntry> *subcmds;
+    QString subcmd;
+    int pos;
+
+    subcmds = cmds.at(id).subcmds;
+    pos = cmd->indexOf(':');
+    if (pos < 0)
+        goto out;
+    cmd->remove(0, pos + 1);
+    for (int i = 0; i < 3; i++) {
+        bool found = false;
+        pos = cmd->indexOf(':');
+        if (pos >= 0) {
+            subcmd = cmd->left(pos);
+            cmd->remove(0, pos + 1);
+        } else {
+            subcmd = *cmd;
+        }
+        qDebug() << "subcmd:" << subcmd;
+        for (int j = 0; j < subcmds->size(); j++) {
+            if (!subcmd.startsWith(subcmds->at(j).cmd))
+                continue;
+            if (subcmd.lastIndexOf('?') >= 0) {
+                answer->append(subcmds->at(j).answer);
+                error = ERR_NONE;
+                goto out;
+            }
+            if (!subcmds->at(j).subcmds) {
+                error = ERR_NONE;
+                goto out;
+            }
+            subcmds = subcmds->at(j).subcmds;
+            found = true;
+            break;
+        }
+        if (!found)
+            goto out;
+        if (pos < 0) {
+            error = ERR_NONE;
+            goto out;
+        }
+    }
+out:
+    return error;
+}
+
+void DMMControl::handleFetch(void)
+{
+    double voltage;
+    QString voltStr;
+
+    voltage = DMM_FETC_DBL;
+    voltage += ((double) qrand() / (double) RAND_MAX - 0.5) / 10000;
+    voltStr.setNum(voltage, 'f', 6);
+    cmds[FETC_ID].answer = voltStr;
 }
 
 
