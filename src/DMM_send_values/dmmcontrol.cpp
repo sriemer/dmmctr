@@ -370,9 +370,9 @@ DMMErrorType DMMControl::handleCmd(CmdIDType id, QString *cmd, QString *answer)
         break;
     case DISPLAY_ID:
         if (value.startsWith("ON", Qt::CaseInsensitive))
-            break;
+            emit sendDisplayOn();
         else if (value.startsWith("OFF", Qt::CaseInsensitive))
-            break;
+            emit sendDisplayOff();
         else
             error = ERR_UNWANTED;
         break;

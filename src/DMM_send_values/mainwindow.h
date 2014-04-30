@@ -55,6 +55,7 @@ public slots:
 private:
     QWidget     *mainWidget;
     QHBoxLayout *mainLayout;
+
     QGroupBox   *portGroup;
     QVBoxLayout *portLayout;
     QLabel      *portLabel;
@@ -82,6 +83,10 @@ private:
     QLabel       *answerLabel;
     QTextBrowser *commandDisplay;
     QTextBrowser *answerDisplay;
+
+    QGroupBox    *settingsGroup;
+    QVBoxLayout  *settingsLayout;
+    LEDIndicator *displayIndicat;
 
     SerialPortCtr *portCtr;
     Settings      *sets;

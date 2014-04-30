@@ -57,6 +57,9 @@ MainWindow::MainWindow()
     answerLabel        = new QLabel;
     commandDisplay     = new QTextBrowser;
     answerDisplay      = new QTextBrowser;
+    settingsGroup      = new QGroupBox;
+    settingsLayout     = new QVBoxLayout;
+    displayIndicat     = new LEDIndicator(LED_GREEN, tr("Display"), "");
 
     sets     = new Settings();
     started  = false;
@@ -89,6 +92,8 @@ void MainWindow::initThreads()
             this, SLOT(setCommand(QString)));
     connect(dmmCtr, SIGNAL(sendSetAnswer(QString)),
             this, SLOT(setAnswer(QString)));
+    connect(dmmCtr, SIGNAL(sendDisplayOn()), displayIndicat, SLOT(setOn()));
+    connect(dmmCtr, SIGNAL(sendDisplayOff()), displayIndicat, SLOT(setOff()));
     connect(dmmCtr, SIGNAL(sendStarted()), this, SLOT(ctrStarted()));
     connect(dmmCtr, SIGNAL(sendStopped()), this, SLOT(ctrStopped()));
     dmmCtr->start();
@@ -161,8 +166,13 @@ void MainWindow::initLayout()
     centerLayout->addStretch(400);
     centerWidget->setLayout(centerLayout);
 
+    settingsLayout->addWidget(displayIndicat, 0, Qt::AlignLeft);
+    settingsLayout->addStretch(400);
+    settingsGroup->setLayout(settingsLayout);
+
     mainLayout->addWidget(portGroup, 0, Qt::AlignLeft);
     mainLayout->addWidget(centerWidget, 0, Qt::AlignLeft);
+    mainLayout->addWidget(settingsGroup, 0, Qt::AlignLeft);
     mainLayout->addStretch(400);
     mainWidget->setLayout(mainLayout);
 }
@@ -201,6 +211,9 @@ void MainWindow::initControls()
     answerLabel->setText(tr("Answer"));
     commandDisplay->setMaximumSize(progCtrFrame->sizeHint().width(), 90);
     answerDisplay->setMaximumSize(progCtrFrame->sizeHint().width(), 90);
+
+    settingsGroup->setTitle(tr("Settings"));
+    displayIndicat->setOn();
 }
 
 void MainWindow::initPortControls()

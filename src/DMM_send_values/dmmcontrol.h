@@ -75,6 +75,8 @@ signals:
     void sendClearError();
     void sendSetCommand(QString cmd);
     void sendSetAnswer(QString answ);
+    void sendDisplayOn();
+    void sendDisplayOff();
     void sendStarted();
     void sendStopped();
 
