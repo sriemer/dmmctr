@@ -60,6 +60,10 @@ MainWindow::MainWindow()
     settingsGroup      = new QGroupBox;
     settingsLayout     = new QVBoxLayout;
     displayIndicat     = new LEDIndicator(LED_GREEN, tr("Display"), "");
+    trigCountLabel     = new QLabel;
+    trigCountDisplay   = new QLineEdit;
+    sampCountLabel     = new QLabel;
+    sampCountDisplay   = new QLineEdit;
 
     sets     = new Settings();
     started  = false;
@@ -84,9 +88,10 @@ void MainWindow::initThreads()
 
     dmmCtr = new DMMControl(portCtr, sets);
     connect(portCtr, SIGNAL(sendPortsReady()), dmmCtr, SLOT(setReady()));
-    connect(dmmCtr, SIGNAL(sendSetTimeout()), this, SLOT(setTimeout()));
-    connect(dmmCtr, SIGNAL(sendClearTimeout()), this, SLOT(clearTimeout()));
+    connect(dmmCtr, SIGNAL(sendSetTimeout()), timeoutIndicat, SLOT(setOn()));
+    connect(dmmCtr, SIGNAL(sendClearTimeout()), timeoutIndicat, SLOT(setOff()));
     connect(dmmCtr, SIGNAL(sendSetError()), this, SLOT(setError()));
+    connect(dmmCtr, SIGNAL(sendClearError()), errorIndicat, SLOT(setOff()));
     connect(dmmCtr, SIGNAL(sendEnable()), portCtr, SLOT(enable()));
     connect(dmmCtr, SIGNAL(sendSetCommand(QString)),
             this, SLOT(setCommand(QString)));
@@ -94,6 +99,8 @@ void MainWindow::initThreads()
             this, SLOT(setAnswer(QString)));
     connect(dmmCtr, SIGNAL(sendDisplayOn()), displayIndicat, SLOT(setOn()));
     connect(dmmCtr, SIGNAL(sendDisplayOff()), displayIndicat, SLOT(setOff()));
+    connect(dmmCtr, SIGNAL(sendTrigCount(QString)), trigCountDisplay, SLOT(setText(QString)));
+    connect(dmmCtr, SIGNAL(sendSampCount(QString)), sampCountDisplay, SLOT(setText(QString)));
     connect(dmmCtr, SIGNAL(sendStarted()), this, SLOT(ctrStarted()));
     connect(dmmCtr, SIGNAL(sendStopped()), this, SLOT(ctrStopped()));
     dmmCtr->start();
@@ -167,6 +174,10 @@ void MainWindow::initLayout()
     centerWidget->setLayout(centerLayout);
 
     settingsLayout->addWidget(displayIndicat, 0, Qt::AlignLeft);
+    settingsLayout->addWidget(trigCountLabel, 0);
+    settingsLayout->addWidget(trigCountDisplay, 0);
+    settingsLayout->addWidget(sampCountLabel, 0);
+    settingsLayout->addWidget(sampCountDisplay, 0);
     settingsLayout->addStretch(400);
     settingsGroup->setLayout(settingsLayout);
 
@@ -214,6 +225,12 @@ void MainWindow::initControls()
 
     settingsGroup->setTitle(tr("Settings"));
     displayIndicat->setOn();
+    trigCountLabel->setText(tr("Trigger Count"));
+    trigCountDisplay->setReadOnly(true);
+    trigCountDisplay->setText("1");
+    sampCountLabel->setText(tr("Samples Count"));
+    sampCountDisplay->setReadOnly(true);
+    sampCountDisplay->setText("1");
 }
 
 void MainWindow::initPortControls()
@@ -262,25 +279,10 @@ void MainWindow::reinitPorts(QStringList portNames)
     portComboBox->setCurrentIndex(i);
 }
 
-void MainWindow::setTimeout()
-{
-    emit timeoutIndicat->setOn();
-}
-
-void MainWindow::clearTimeout()
-{
-    emit timeoutIndicat->setOff();
-}
-
 void MainWindow::setError()
 {
     emit errorIndicat->setOn();
     stop();
-}
-
-void MainWindow::clearError()
-{
-    emit errorIndicat->setOff();
 }
 
 void MainWindow::portsDetected()

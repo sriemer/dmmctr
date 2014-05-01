@@ -77,6 +77,8 @@ signals:
     void sendSetAnswer(QString answ);
     void sendDisplayOn();
     void sendDisplayOff();
+    void sendTrigCount(QString value);
+    void sendSampCount(QString value);
     void sendStarted();
     void sendStopped();
 
@@ -101,7 +103,9 @@ private:
     int  readAndSendBack   (void);
     DMMErrorType readPort  (void);
     DMMErrorType handleCmd (CmdIDType id, QString *cmd, QString *answer);
-    DMMErrorType handleSubCmds (CmdIDType id, QString *cmd, QString *answer);
+    DMMErrorType handleSubCmds (CmdIDType id, QString *cmd, QString *answer,
+                                QString *value);
+    void handleSubCmd (int cmd_ids[], QString *value);
     void handleFetch  (void);
 };
 

@@ -23,6 +23,10 @@
 
 #define DMM_FETC_DBL  -0.000200
 
+typedef enum {
+    COUN_ID
+} DMMTrigType;
+
 
 DMMControl::DMMControl(SerialPortCtr *portControl, Settings *settings)
 {
@@ -145,6 +149,10 @@ void DMMControl::initCmds(void)
     idx = TRIG_ID;
     cmds[idx].cmd = "TRIG";
     cmds[idx].subcmds = new QVector<CmdEntry>();
+    cmd_en.cmd = "COUN";
+    cmd_en.answer.clear();
+    cmd_en.subcmds = NULL;
+    cmds[idx].subcmds->append(cmd_en);
     cmd_en.cmd = "DEL";
     cmd_en.answer.clear();
     cmd_en.subcmds = new QVector<CmdEntry>();
@@ -154,10 +162,6 @@ void DMMControl::initCmds(void)
     cmd_en.subcmds = NULL;
     cmds[idx].subcmds->last().subcmds->append(cmd_en);
     cmd_en.cmd = "SOUR";
-    cmd_en.answer.clear();
-    cmd_en.subcmds = NULL;
-    cmds[idx].subcmds->append(cmd_en);
-    cmd_en.cmd = "COUN";
     cmd_en.answer.clear();
     cmd_en.subcmds = NULL;
     cmds[idx].subcmds->append(cmd_en);
@@ -360,7 +364,7 @@ DMMErrorType DMMControl::handleCmd(CmdIDType id, QString *cmd, QString *answer)
     case VOLT_ID:
     case TRIG_ID:
     case SAMPLES_ID:
-        error = handleSubCmds(id, cmd, answer);
+        error = handleSubCmds(id, cmd, answer, &value);
         break;
     case CLS_ID:
     case RST_ID:
@@ -383,11 +387,13 @@ DMMErrorType DMMControl::handleCmd(CmdIDType id, QString *cmd, QString *answer)
     return error;
 }
 
-DMMErrorType DMMControl::handleSubCmds(CmdIDType id, QString *cmd, QString *answer)
+DMMErrorType DMMControl::handleSubCmds(CmdIDType id, QString *cmd,
+                                       QString *answer, QString *value)
 {
     DMMErrorType error = ERR_UNWANTED;
     QVector<CmdEntry> *subcmds;
     QString subcmd;
+    int cmd_ids[3] = { (int) id, -1, -1 };
     int pos;
 
     subcmds = cmds.at(id).subcmds;
@@ -395,7 +401,7 @@ DMMErrorType DMMControl::handleSubCmds(CmdIDType id, QString *cmd, QString *answ
     if (pos < 0)
         goto out;
     cmd->remove(0, pos + 1);
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 2; i++) {
         bool found = false;
         pos = cmd->indexOf(':');
         if (pos >= 0) {
@@ -409,15 +415,19 @@ DMMErrorType DMMControl::handleSubCmds(CmdIDType id, QString *cmd, QString *answ
             if (!subcmd.startsWith(subcmds->at(j).cmd))
                 continue;
             if (subcmd.lastIndexOf('?') >= 0) {
+                cmd_ids[i + 1] = j;
                 answer->append(subcmds->at(j).answer);
                 error = ERR_NONE;
                 goto out;
             }
             if (!subcmds->at(j).subcmds) {
+                cmd_ids[i + 1] = j;
+                handleSubCmd(cmd_ids, value);
                 error = ERR_NONE;
                 goto out;
             }
             subcmds = subcmds->at(j).subcmds;
+            cmd_ids[i + 1] = j;
             found = true;
             break;
         }
@@ -430,6 +440,32 @@ DMMErrorType DMMControl::handleSubCmds(CmdIDType id, QString *cmd, QString *answ
     }
 out:
     return error;
+}
+
+void DMMControl::handleSubCmd(int cmd_ids[], QString *value)
+{
+    switch (cmd_ids[0]) {
+    case TRIG_ID:
+        switch (cmd_ids[1]) {
+        case COUN_ID:
+            sendTrigCount(*value);
+            break;
+        default:
+            break;
+        }
+        break;
+    case SAMPLES_ID:
+        switch (cmd_ids[1]) {
+        case COUN_ID:
+            sendSampCount(*value);
+            break;
+        default:
+            break;
+        }
+        break;
+    default:
+        break;
+    }
 }
 
 void DMMControl::handleFetch(void)

@@ -31,6 +31,7 @@ class QPushButton;
 class QTabWidget;
 class QSpinBox;
 class QTextBrowser;
+class QLineEdit;
 
 class MainWindow : public QMainWindow
 {
@@ -42,10 +43,7 @@ public:
 public slots:
     void initPorts  (QStringList portNames);
     void reinitPorts(QStringList portNames);
-    void setTimeout();
-    void clearTimeout();
     void setError();
-    void clearError();
     void portsDetected();
     void setCommand(QString cmd);
     void setAnswer(QString answ);
@@ -87,6 +85,10 @@ private:
     QGroupBox    *settingsGroup;
     QVBoxLayout  *settingsLayout;
     LEDIndicator *displayIndicat;
+    QLabel       *trigCountLabel;
+    QLineEdit    *trigCountDisplay;
+    QLabel       *sampCountLabel;
+    QLineEdit    *sampCountDisplay;
 
     SerialPortCtr *portCtr;
     Settings      *sets;
