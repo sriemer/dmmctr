@@ -95,6 +95,8 @@ private:
     int     timeout;
     bool    stopRequested;
     bool    ready;
+    int     trigCount;
+    int     sampCount;
 
     void initRequests (void);
     void initCmds     (void);

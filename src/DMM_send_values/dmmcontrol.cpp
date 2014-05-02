@@ -37,6 +37,8 @@ DMMControl::DMMControl(SerialPortCtr *portControl, Settings *settings)
     ready = false;
     timeout = RD_DEF_TIMEOUT;
     initCmds();
+    trigCount = 1;
+    sampCount = 1;
     qDebug() << "DMMControl created";
 }
 
@@ -448,6 +450,7 @@ void DMMControl::handleSubCmd(int cmd_ids[], QString *value)
     case TRIG_ID:
         switch (cmd_ids[1]) {
         case COUN_ID:
+            trigCount = value->toInt();
             sendTrigCount(*value);
             break;
         default:
@@ -457,6 +460,7 @@ void DMMControl::handleSubCmd(int cmd_ids[], QString *value)
     case SAMPLES_ID:
         switch (cmd_ids[1]) {
         case COUN_ID:
+            sampCount = value->toInt();
             sendSampCount(*value);
             break;
         default:
@@ -472,11 +476,17 @@ void DMMControl::handleFetch(void)
 {
     double voltage;
     QString voltStr;
+    int id = (int) FETC_ID;
 
-    voltage = DMM_FETC_DBL;
-    voltage += ((double) qrand() / (double) RAND_MAX - 0.5) / 10000;
-    voltStr.setNum(voltage, 'f', 6);
-    cmds[FETC_ID].answer = voltStr;
+    cmds[id].answer.clear();
+    for (int i = 0; i < sampCount * trigCount; i++) {
+        voltage = DMM_FETC_DBL;
+        voltage += ((double) qrand() / (double) RAND_MAX - 0.5) / 10000;
+        voltStr.setNum(voltage, 'f', 6);
+        cmds[id].answer += voltStr;
+        cmds[id].answer += ',';
+    }
+    cmds[id].answer.chop(1);
 }
 
 
