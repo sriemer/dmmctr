@@ -17,7 +17,7 @@
 #include "../serialportctr.h"
 #include "../settings.h"
 
-#define RD_BUFF_SIZE   1024
+#define RD_BUFF_SIZE   4096
 #define RD_POLL_RATE     50  // ms
 #define RD_DEF_TIMEOUT 1000  // ms
 
@@ -304,7 +304,7 @@ out:
 
 DMMErrorType DMMControl::readPort(void)
 {
-    char buff[RD_BUFF_SIZE];
+    char buff[RD_BUFF_SIZE + 1];
     int  numBytes;
     int  readBytes;
     int  i = 0;
@@ -313,23 +313,25 @@ DMMErrorType DMMControl::readPort(void)
     do {
         msleep(RD_POLL_RATE);
         i++;
-        numBytes = serPort->bytesAvailable();
 
-        if (!message.isEmpty() && numBytes <= 0) {
+        while ((numBytes = serPort->bytesAvailable()) > 0) {
+            // prevent buffer overflow, need last char for '\0'
+            if (numBytes > (int)(sizeof(buff) - 1))
+                numBytes = (int)(sizeof(buff) - 1);
+
+            readBytes = serPort->read(buff, numBytes);
+            if (readBytes >= 0)
+                buff[readBytes] = '\0';
+            else
+                buff[0] = '\0';
+
+            message.append(buff);
+        }
+
+        if (!message.isEmpty() && message.endsWith("\n")) {
             error = ERR_NONE;
             break;
         }
-
-        if (numBytes > RD_BUFF_SIZE)
-            numBytes = RD_BUFF_SIZE;
-
-        readBytes = serPort->read(buff, numBytes);
-        if (readBytes != -1)
-            buff[readBytes] = '\0';
-        else
-            buff[0] = '\0';
-
-        message.append(buff);
     } while (i <= (timeout / RD_POLL_RATE));
 
     return error;
