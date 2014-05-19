@@ -17,7 +17,7 @@
 #include "serialportctr.h"
 #include "settings.h"
 
-#define RD_BUFF_SIZE    1024
+#define RD_BUFF_SIZE    4096
 #define RD_POLL_RATE       5  // ms
 #define RD_INI_TIMEOUT  5000  // ms
 
@@ -206,7 +206,8 @@ int DMMControl::retrieveDMMVal(void)
         // fetch current value
         message = "INIT;\nFETC?\n";
         expRegExp.setPattern("^[+-]");
-        ret = sendAndReadBack(&expRegExp);
+        ret = sendAndReadBack(&expRegExp,
+            RD_DEF_TIMEOUT * sets->getCfgInt(SAMP_ID));
         if (ret)
             break;
 
@@ -267,7 +268,7 @@ int DMMControl::sendAndReadBack(T *expected, int timeout)
 template <typename T>
 int DMMControl::readPort(T *expected, int timeout)
 {
-    char buff[RD_BUFF_SIZE];
+    char buff[RD_BUFF_SIZE + 1];
     int  numBytes;
     int  readBytes;
     int  i = 0;
@@ -276,30 +277,28 @@ int DMMControl::readPort(T *expected, int timeout)
     do {
         msleep(RD_POLL_RATE);
         i++;
-        numBytes = serPort->bytesAvailable();
 
-        // prevent buffer overflow, need last char for '\0'
-        if (numBytes > RD_BUFF_SIZE - 1)
-            numBytes = RD_BUFF_SIZE - 1;
+        while ((numBytes = serPort->bytesAvailable()) > 0) {
+            // prevent buffer overflow, need last char for '\0'
+            if (numBytes > (int)(sizeof(buff) - 1))
+                numBytes = (int)(sizeof(buff) - 1);
 
-        readBytes = serPort->read(buff, numBytes);
-        if (readBytes >= 0)
-            buff[readBytes] = '\0';
-        else
-            buff[0] = '\0';
+            readBytes = serPort->read(buff, numBytes);
+            if (readBytes >= 0)
+                buff[readBytes] = '\0';
+            else
+                buff[0] = '\0';
 
-        message.append(buff);
+            message.append(buff);
+        }
 
-        if (!message.isEmpty()) {
+        if (!message.isEmpty() && message.endsWith("\r\n")) {
             if (message.contains(*expected)) {
-                if (message.endsWith("\r\n")) {
-                    error = ERR_NONE;
-                    break;
-                } else {
-                   error = ERR_TERM;
-                }
+                error = ERR_NONE;
+                break;
             } else {
                 error = ERR_UNWANTED;
+                break;
             }
         }
 
