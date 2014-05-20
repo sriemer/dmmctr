@@ -87,7 +87,8 @@ void DMMControl::stopDMMCtr(void)
         return;
 
     command = "DISP ON\n";
-    send();
+    if (send())
+        emit sendSetError();
 
     portCtr->closePort(serPort);
     delete serPort;
@@ -239,29 +240,52 @@ int DMMControl::retrieveDMMVal(void)
     return ret;
 }
 
-void DMMControl::send(void)
+int DMMControl::send(void)
 {
-    serPort->write(command.toAscii(), command.length());
+    int ret;
+
     qDebug() << command;
+    serPort->write(command.toAscii(), command.length());
+    ret = !!serPort->lastError();
+    if (ret)
+        qDebug() << serPort->errorString();
+
+    return ret;
 }
 
 template <typename T>
 int DMMControl::sendAndReadBack(T *expected, int timeout)
 {
-    int ret;
+#define READ_TRIES 2
+    int i, ret;
 
-    send();
-
-    response.clear();
-    ret = readPort(expected, timeout);
-    if (ret == ERR_TIMEOUT)
-        emit sendSetTimeout();
-    else if (ret != ERR_NONE)
+    ret = send();
+    if (ret) {
+        ret = ERR_UNWANTED;
         emit sendSetError();
-
+        goto out;
+    }
+    response.clear();
+    // concatenate timed out non-empty response strings
+    for (i = 0; i < READ_TRIES; i++) {
+        ret = readPort(expected, timeout);
+        if (ret != ERR_TIMEOUT)
+            break;
+        emit sendSetTimeout();
+	if (response.isEmpty())
+            goto out;
+        if (i == (READ_TRIES - 1))  // unlikely: not empty and still timed out
+            ret = ERR_UNWANTED;
+        else
+            qDebug() << "Timed out incomplete response received - retrying.";
+    }
     qDebug() << response;
-
+    emit sendClearTimeout();
+    if (ret)
+        emit sendSetError();
+out:
     return ret;
+#undef READ_TRIES
 }
 
 // QString and QRegExp are used
@@ -288,10 +312,17 @@ int DMMControl::readPort(T *expected, int timeout)
                 buff[readBytes] = '\0';
             else
                 buff[0] = '\0';
+            if (serPort->lastError())
+                break;
 
             response.append(buff);
         }
 
+        if (serPort->lastError()) {
+            qDebug() << serPort->errorString();
+            error = ERR_UNWANTED;
+            break;
+        }
         if (!response.isEmpty() && response.endsWith("\r\n")) {
             if (response.contains(*expected)) {
                 error = ERR_NONE;

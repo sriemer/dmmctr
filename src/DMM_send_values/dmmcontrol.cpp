@@ -236,70 +236,84 @@ int DMMControl::emulateDMM(void)
 
 int DMMControl::readAndSendBack(void)
 {
+#define READ_TRIES 2
     DMMErrorType error;
-    int pos = 0, end = 0;
+    int i, pos = 0, end = 0;
     QString cmd;
     QString response;
 
     command.clear();
-    error = readPort();
-    emit sendSetCommand(command);
-    if (error == ERR_TIMEOUT) {
+    // concatenate timed out non-empty command strings
+    for (i = 0; i < READ_TRIES; i++) {
+        error = readPort();
+        if (error != ERR_TIMEOUT)
+            break;
         emit sendSetTimeout();
-        error = ERR_NONE;
-        goto out;
-    } else {
-        qDebug() << command;
-        emit sendClearTimeout();
-        if (!command.endsWith("\n")) {
-            error = ERR_TERM;
-            emit sendSetError();
+        if (command.isEmpty()) {
+            error = ERR_NONE;
+            goto out;
         }
-        while (true) {
-            if (command.startsWith('\n'))
-                command.remove(0, 1);
-            if (command.startsWith(':'))
-                command.remove(0, 1);
-            if (command.isEmpty())
-                break;
-            end = command.indexOf(';');
-            pos = command.indexOf('\n');
-            if (end >= 0) {
-                if (pos >= 0 && pos < end)
-                    end = pos;
-                cmd = command.left(end);
-            } else if (pos >= 0) {
-                end = pos;
-                cmd = command.left(end);
-            } else {
-                cmd = command;
-            }
+        if (i == (READ_TRIES - 1))  // unlikely: not empty and still timed out
             error = ERR_UNWANTED;
-            qDebug() << "cmd:" << cmd;
-            for (int i = 0; i < cmds.size(); i++) {
-                if (!cmd.startsWith(cmds.at(i).cmd))
-                    continue;
-                error = handleCmd((CmdIDType) i, &cmd, &response);
-                break;
-            }
-            if (error == ERR_UNWANTED) {
-                emit sendSetError();
-                //error = ERR_NONE;   // For testing only!
-                goto out;
-            }
-            if (end < 0)
-                break;
-            command.remove(0, end + 1);
+        else
+            qDebug() << "Timed out incomplete command received - retrying.";
+    }
+    emit sendSetCommand(command);
+    qDebug() << command;
+    emit sendClearTimeout();
+    if (error) {
+        emit sendSetError();
+        goto out;
+    }
+    while (true) {
+        if (command.startsWith('\n'))
+            command.remove(0, 1);
+        if (command.startsWith(':'))
+            command.remove(0, 1);
+        if (command.isEmpty())
+            break;
+        end = command.indexOf(';');
+        pos = command.indexOf('\n');
+        if (end >= 0) {
+            if (pos >= 0 && pos < end)
+                end = pos;
+            cmd = command.left(end);
+        } else if (pos >= 0) {
+            end = pos;
+            cmd = command.left(end);
+        } else {
+            cmd = command;
         }
-        if (!response.isEmpty()) {
-            response.append("\r\n");
-            serPort->write(response.toAscii(), response.length());
-            qDebug() << "response: " << response;
+        error = ERR_UNWANTED;
+        qDebug() << "cmd:" << cmd;
+        for (int i = 0; i < cmds.size(); i++) {
+            if (!cmd.startsWith(cmds.at(i).cmd))
+                continue;
+            error = handleCmd((CmdIDType) i, &cmd, &response);
+            break;
+        }
+        if (error == ERR_UNWANTED) {
+            emit sendSetError();
+            //error = ERR_NONE;   // For testing only!
+            goto out;
+        }
+        if (end < 0)
+            break;
+        command.remove(0, end + 1);
+    }
+    if (!response.isEmpty()) {
+        response.append("\r\n");
+        qDebug() << "response: " << response;
+        serPort->write(response.toAscii(), response.length());
+        if (serPort->lastError()) {
+            qDebug() << serPort->errorString();
+            error = ERR_UNWANTED;
         }
     }
 out:
     emit sendSetResponse(response);
     return error;
+#undef READ_TRIES
 }
 
 DMMErrorType DMMControl::readPort(void)
@@ -324,10 +338,17 @@ DMMErrorType DMMControl::readPort(void)
                 buff[readBytes] = '\0';
             else
                 buff[0] = '\0';
+            if (serPort->lastError())
+                break;
 
             command.append(buff);
         }
 
+        if (serPort->lastError()) {
+            qDebug() << serPort->errorString();
+            error = ERR_UNWANTED;
+            break;
+        }
         if (!command.isEmpty() && command.endsWith("\n")) {
             error = ERR_NONE;
             break;
