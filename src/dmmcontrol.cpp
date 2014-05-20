@@ -86,7 +86,7 @@ void DMMControl::stopDMMCtr(void)
     if (!serPort)
         return;
 
-    message = "DISP ON\n";
+    command = "DISP ON\n";
     send();
 
     portCtr->closePort(serPort);
@@ -103,21 +103,21 @@ int DMMControl::initDMM(void)
         goto out;
 
     // clear DMM buff and set DMM into remote mode
-    message  = "*CLS\nSYST:REM\n" DMM_OPC;
+    command  = "*CLS\nSYST:REM\n" DMM_OPC;
     expected = DMM_OPC_EXP;
     ret = sendAndReadBack(&expected, RD_INI_TIMEOUT);
     if (ret || stopRequested)
         goto out;
 
     // get DMM identification
-    message  = DMM_IDN;
+    command  = DMM_IDN;
     expected = DMM_IDN_EXP;
     ret = sendAndReadBack(&expected);
     if (ret || stopRequested)
         goto out;
 
     // reset DMM and set status registers
-    message = "*RST;\n*ESE 60;*SRE 56;*CLS;"
+    command = "*RST;\n*ESE 60;*SRE 56;*CLS;"
               ":STAT:QUES:ENAB 32767\n" DMM_SYS_ERR;
     expected = DMM_SYS_EXP;
     ret = sendAndReadBack(&expected, RD_INI_TIMEOUT);
@@ -125,27 +125,27 @@ int DMMControl::initDMM(void)
         goto out;
 
     // deactivate beeper, configure display
-    message = "SYSTEM:ERROR:BEEPER 0;\n";
-    message.append("DISP ");
-    message.append(sets->getStringFromID(DISP_ID));
-    message.append(";\n" DMM_SYS_ERR);
+    command = "SYSTEM:ERROR:BEEPER 0;\n";
+    command.append("DISP ");
+    command.append(sets->getStringFromID(DISP_ID));
+    command.append(";\n" DMM_SYS_ERR);
     expected = DMM_SYS_EXP;
     ret = sendAndReadBack(&expected);
     if (ret || stopRequested)
         goto out;
 
     // set auto zero
-    message = ":ZERO:AUTO ";
-    message.append(sets->getStringFromID(AUTOZ_ID));
-    message.append(";\n" DMM_SYS_ERR);
+    command = ":ZERO:AUTO ";
+    command.append(sets->getStringFromID(AUTOZ_ID));
+    command.append(";\n" DMM_SYS_ERR);
     expected = DMM_SYS_EXP;
     ret = sendAndReadBack(&expected);
     if (ret || stopRequested)
         goto out;
 
     // set DMM function
-    message = sets->getStringFromID(FUNCT_ID);
-    message.append(";\n" DMM_SYS_ERR);
+    command = sets->getStringFromID(FUNCT_ID);
+    command.append(";\n" DMM_SYS_ERR);
     expected = DMM_SYS_EXP;
     ret = sendAndReadBack(&expected);
     if (ret || stopRequested)
@@ -153,9 +153,9 @@ int DMMControl::initDMM(void)
 
     // set DC volts intgration time
     if (sets->getCfgID(FUNCT_ID) == 0) {  //TODO compare with enum
-       message = "VOLT:DC:NPLC ";
-       message.append(sets->getStringFromID(INTEGR_ID));
-       message.append(";\n" DMM_SYS_ERR);
+       command = "VOLT:DC:NPLC ";
+       command.append(sets->getStringFromID(INTEGR_ID));
+       command.append(";\n" DMM_SYS_ERR);
        expected = DMM_SYS_EXP;
        ret = sendAndReadBack(&expected);
        if (ret || stopRequested)
@@ -163,13 +163,13 @@ int DMMControl::initDMM(void)
     }
 
     // set trigger config
-    message = ":TRIG:DEL ";
-    message.append(sets->getCfgIntAsStr(TRIG_DEL_ID));
-    message.append(";:TRIG:DEL:AUTO ");
-    message.append(sets->getStringFromID(TRIG_ADE_ID));
-    message.append(";:TRIG:SOUR ");
-    message.append(sets->getStringFromID(TRIG_SRC_ID));
-    message.append(";\n" DMM_SYS_ERR);
+    command = ":TRIG:DEL ";
+    command.append(sets->getCfgIntAsStr(TRIG_DEL_ID));
+    command.append(";:TRIG:DEL:AUTO ");
+    command.append(sets->getStringFromID(TRIG_ADE_ID));
+    command.append(";:TRIG:SOUR ");
+    command.append(sets->getStringFromID(TRIG_SRC_ID));
+    command.append(";\n" DMM_SYS_ERR);
     expected = DMM_SYS_EXP;
     ret = sendAndReadBack(&expected);
 out:
@@ -190,31 +190,31 @@ int DMMControl::retrieveDMMVal(void)
 
     do {
         // set trigger and sample count
-        message = ":TRIG:COUN ";
+        command = ":TRIG:COUN ";
         if (sets->getCfgInt(TRIG_CNT_ID) < 1)
-            message.append("INF");
+            command.append("INF");
         else
-            message.append(sets->getCfgIntAsStr(TRIG_CNT_ID));
-        message.append(";:SAMP:COUN ");
-        message.append(sets->getCfgIntAsStr(SAMP_ID));
-        message.append(";\n" DMM_SYS_ERR);
+            command.append(sets->getCfgIntAsStr(TRIG_CNT_ID));
+        command.append(";:SAMP:COUN ");
+        command.append(sets->getCfgIntAsStr(SAMP_ID));
+        command.append(";\n" DMM_SYS_ERR);
         expected = DMM_SYS_EXP;
         ret = sendAndReadBack(&expected);
         if (ret)
             break;
 
         // fetch current value
-        message = "INIT;\nFETC?\n";
+        command = "INIT;\nFETC?\n";
         expRegExp.setPattern("^[+-]");
         ret = sendAndReadBack(&expRegExp,
             RD_DEF_TIMEOUT * sets->getCfgInt(SAMP_ID));
         if (ret)
             break;
 
-        values.append(message);
+        values.append(response);
         sampleCount += sets->getCfgInt(SAMP_ID);
 
-        message = ":STAT:QUES:EVEN?\n";
+        command = ":STAT:QUES:EVEN?\n";
         expRegExp.setPattern("^[+-]");
         ret = sendAndReadBack(&expRegExp);
         if (ret) {
@@ -223,7 +223,7 @@ int DMMControl::retrieveDMMVal(void)
         }
 
         // check DMM status
-        message  = DMM_SYS_ERR;
+        command  = DMM_SYS_ERR;
         expected = DMM_SYS_EXP;
         ret = sendAndReadBack(&expected);
     } while (!ret && !stopRequested);
@@ -241,8 +241,8 @@ int DMMControl::retrieveDMMVal(void)
 
 void DMMControl::send(void)
 {
-    serPort->write(message.toAscii(), message.length());
-    qDebug() << message;
+    serPort->write(command.toAscii(), command.length());
+    qDebug() << command;
 }
 
 template <typename T>
@@ -252,14 +252,14 @@ int DMMControl::sendAndReadBack(T *expected, int timeout)
 
     send();
 
-    message.clear();
+    response.clear();
     ret = readPort(expected, timeout);
     if (ret == ERR_TIMEOUT)
         emit sendSetTimeout();
     else if (ret != ERR_NONE)
         emit sendSetError();
 
-    qDebug() << message;
+    qDebug() << response;
 
     return ret;
 }
@@ -289,11 +289,11 @@ int DMMControl::readPort(T *expected, int timeout)
             else
                 buff[0] = '\0';
 
-            message.append(buff);
+            response.append(buff);
         }
 
-        if (!message.isEmpty() && message.endsWith("\r\n")) {
-            if (message.contains(*expected)) {
+        if (!response.isEmpty() && response.endsWith("\r\n")) {
+            if (response.contains(*expected)) {
                 error = ERR_NONE;
                 break;
             } else {

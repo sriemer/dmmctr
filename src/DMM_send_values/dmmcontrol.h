@@ -53,7 +53,7 @@ class CmdEntry
 {
 public:
     QString cmd;
-    QString answer;
+    QString response;
     QVector<CmdEntry> *subcmds;
 };
 
@@ -74,7 +74,7 @@ signals:
     void sendSetError();
     void sendClearError();
     void sendSetCommand(QString cmd);
-    void sendSetAnswer(QString answ);
+    void sendSetResponse(QString answ);
     void sendDisplayOn();
     void sendDisplayOff();
     void sendTrigCount(QString value);
@@ -91,7 +91,7 @@ private:
     SerialPortCtr  *portCtr;
     Settings *sets;
     QVector<CmdEntry> cmds;
-    QString message;
+    QString command;
     int     timeout;
     bool    stopRequested;
     bool    ready;
@@ -104,8 +104,8 @@ private:
     int  emulateDMM   (void);
     int  readAndSendBack   (void);
     DMMErrorType readPort  (void);
-    DMMErrorType handleCmd (CmdIDType id, QString *cmd, QString *answer);
-    DMMErrorType handleSubCmds (CmdIDType id, QString *cmd, QString *answer,
+    DMMErrorType handleCmd (CmdIDType id, QString *cmd, QString *response);
+    DMMErrorType handleSubCmds (CmdIDType id, QString *cmd, QString *response,
                                 QString *value);
     void handleSubCmd (int cmd_ids[], QString *value);
     void handleFetch  (void);

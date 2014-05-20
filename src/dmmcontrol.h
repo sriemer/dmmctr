@@ -57,7 +57,8 @@ private:
     QextSerialPort *serPort;
     SerialPortCtr  *portCtr;
     Settings *sets;
-    QString message;
+    QString command;
+    QString response;
     bool    stopRequested;
     bool    ready;
 

@@ -55,17 +55,17 @@ void DMMControl::initCmds(void)
 
     idx = OPC_ID;
     cmds[idx].cmd = "*OPC?";
-    cmds[idx].answer = "1";
+    cmds[idx].response = "1";
     cmds[idx].subcmds = NULL;
 
     idx = IDN_ID;
     cmds[idx].cmd = "*IDN?";
-    cmds[idx].answer = "TEKTRONIX,DMM4050,1555202,08/02/10-11:53";
+    cmds[idx].response = "TEKTRONIX,DMM4050,1555202,08/02/10-11:53";
     cmds[idx].subcmds = NULL;
 
     idx = FETC_ID;
     cmds[idx].cmd = "FETC?";
-    cmds[idx].answer = "-0.000200";
+    cmds[idx].response = "-0.000200";
     cmds[idx].subcmds = NULL;
 
     idx = CLS_ID;
@@ -76,15 +76,15 @@ void DMMControl::initCmds(void)
     cmds[idx].cmd = "SYST";
     cmds[idx].subcmds = new QVector<CmdEntry>();
     cmd_en.cmd = "REM";
-    cmd_en.answer.clear();
+    cmd_en.response.clear();
     cmd_en.subcmds = NULL;
     cmds[idx].subcmds->append(cmd_en);
     cmd_en.cmd = "ERR";
-    cmd_en.answer = "+0,\"No error\"";
+    cmd_en.response = "+0,\"No error\"";
     cmd_en.subcmds = new QVector<CmdEntry>();
     cmds[idx].subcmds->append(cmd_en);
     cmd_en.cmd = "BEEPER";
-    cmd_en.answer.clear();
+    cmd_en.response.clear();
     cmd_en.subcmds = NULL;
     cmds[idx].subcmds->last().subcmds->append(cmd_en);
 
@@ -104,15 +104,15 @@ void DMMControl::initCmds(void)
     cmds[idx].cmd = "STAT";
     cmds[idx].subcmds = new QVector<CmdEntry>();
     cmd_en.cmd = "QUES";
-    cmd_en.answer.clear();
+    cmd_en.response.clear();
     cmd_en.subcmds = new QVector<CmdEntry>();
     cmds[idx].subcmds->append(cmd_en);
     cmd_en.cmd = "ENAB";
-    cmd_en.answer.clear();
+    cmd_en.response.clear();
     cmd_en.subcmds = NULL;
     cmds[idx].subcmds->last().subcmds->append(cmd_en);
     cmd_en.cmd = "EVEN";
-    cmd_en.answer = "+8192";
+    cmd_en.response = "+8192";
     cmd_en.subcmds = NULL;
     cmds[idx].subcmds->last().subcmds->append(cmd_en);
 
@@ -120,7 +120,7 @@ void DMMControl::initCmds(void)
     cmds[idx].cmd = "ZERO";
     cmds[idx].subcmds = new QVector<CmdEntry>();
     cmd_en.cmd = "AUTO";
-    cmd_en.answer.clear();
+    cmd_en.response.clear();
     cmd_en.subcmds = NULL;
     cmds[idx].subcmds->append(cmd_en);
 
@@ -128,11 +128,11 @@ void DMMControl::initCmds(void)
     cmds[idx].cmd = "CONF";
     cmds[idx].subcmds = new QVector<CmdEntry>();
     cmd_en.cmd = "VOLT";
-    cmd_en.answer.clear();
+    cmd_en.response.clear();
     cmd_en.subcmds = new QVector<CmdEntry>();
     cmds[idx].subcmds->append(cmd_en);
     cmd_en.cmd = "DC";
-    cmd_en.answer.clear();
+    cmd_en.response.clear();
     cmd_en.subcmds = NULL;
     cmds[idx].subcmds->last().subcmds->append(cmd_en);
 
@@ -140,11 +140,11 @@ void DMMControl::initCmds(void)
     cmds[idx].cmd = "VOLT";
     cmds[idx].subcmds = new QVector<CmdEntry>();
     cmd_en.cmd = "DC";
-    cmd_en.answer.clear();
+    cmd_en.response.clear();
     cmd_en.subcmds = new QVector<CmdEntry>();
     cmds[idx].subcmds->append(cmd_en);
     cmd_en.cmd = "NPLC";
-    cmd_en.answer.clear();
+    cmd_en.response.clear();
     cmd_en.subcmds = NULL;
     cmds[idx].subcmds->last().subcmds->append(cmd_en);
 
@@ -152,19 +152,19 @@ void DMMControl::initCmds(void)
     cmds[idx].cmd = "TRIG";
     cmds[idx].subcmds = new QVector<CmdEntry>();
     cmd_en.cmd = "COUN";
-    cmd_en.answer.clear();
+    cmd_en.response.clear();
     cmd_en.subcmds = NULL;
     cmds[idx].subcmds->append(cmd_en);
     cmd_en.cmd = "DEL";
-    cmd_en.answer.clear();
+    cmd_en.response.clear();
     cmd_en.subcmds = new QVector<CmdEntry>();
     cmds[idx].subcmds->append(cmd_en);
     cmd_en.cmd = "AUTO";
-    cmd_en.answer.clear();
+    cmd_en.response.clear();
     cmd_en.subcmds = NULL;
     cmds[idx].subcmds->last().subcmds->append(cmd_en);
     cmd_en.cmd = "SOUR";
-    cmd_en.answer.clear();
+    cmd_en.response.clear();
     cmd_en.subcmds = NULL;
     cmds[idx].subcmds->append(cmd_en);
 
@@ -172,7 +172,7 @@ void DMMControl::initCmds(void)
     cmds[idx].cmd = "SAMP";
     cmds[idx].subcmds = new QVector<CmdEntry>();
     cmd_en.cmd = "COUN";
-    cmd_en.answer.clear();
+    cmd_en.response.clear();
     cmd_en.subcmds = NULL;
     cmds[idx].subcmds->append(cmd_en);
 
@@ -239,47 +239,47 @@ int DMMControl::readAndSendBack(void)
     DMMErrorType error;
     int pos = 0, end = 0;
     QString cmd;
-    QString answer;
+    QString response;
 
-    message.clear();
+    command.clear();
     error = readPort();
-    emit sendSetCommand(message);
+    emit sendSetCommand(command);
     if (error == ERR_TIMEOUT) {
         emit sendSetTimeout();
         error = ERR_NONE;
         goto out;
     } else {
-        qDebug() << message;
+        qDebug() << command;
         emit sendClearTimeout();
-        if (!message.endsWith("\n")) {
+        if (!command.endsWith("\n")) {
             error = ERR_TERM;
             emit sendSetError();
         }
         while (true) {
-            if (message.startsWith('\n'))
-                message.remove(0, 1);
-            if (message.startsWith(':'))
-                message.remove(0, 1);
-            if (message.isEmpty())
+            if (command.startsWith('\n'))
+                command.remove(0, 1);
+            if (command.startsWith(':'))
+                command.remove(0, 1);
+            if (command.isEmpty())
                 break;
-            end = message.indexOf(';');
-            pos = message.indexOf('\n');
+            end = command.indexOf(';');
+            pos = command.indexOf('\n');
             if (end >= 0) {
                 if (pos >= 0 && pos < end)
                     end = pos;
-                cmd = message.left(end);
+                cmd = command.left(end);
             } else if (pos >= 0) {
                 end = pos;
-                cmd = message.left(end);
+                cmd = command.left(end);
             } else {
-                cmd = message;
+                cmd = command;
             }
             error = ERR_UNWANTED;
             qDebug() << "cmd:" << cmd;
             for (int i = 0; i < cmds.size(); i++) {
                 if (!cmd.startsWith(cmds.at(i).cmd))
                     continue;
-                error = handleCmd((CmdIDType) i, &cmd, &answer);
+                error = handleCmd((CmdIDType) i, &cmd, &response);
                 break;
             }
             if (error == ERR_UNWANTED) {
@@ -289,16 +289,16 @@ int DMMControl::readAndSendBack(void)
             }
             if (end < 0)
                 break;
-            message.remove(0, end + 1);
+            command.remove(0, end + 1);
         }
-        if (!answer.isEmpty()) {
-            answer.append("\r\n");
-            serPort->write(answer.toAscii(), answer.length());
-            qDebug() << "answer: " << answer;
+        if (!response.isEmpty()) {
+            response.append("\r\n");
+            serPort->write(response.toAscii(), response.length());
+            qDebug() << "response: " << response;
         }
     }
 out:
-    emit sendSetAnswer(answer);
+    emit sendSetResponse(response);
     return error;
 }
 
@@ -325,10 +325,10 @@ DMMErrorType DMMControl::readPort(void)
             else
                 buff[0] = '\0';
 
-            message.append(buff);
+            command.append(buff);
         }
 
-        if (!message.isEmpty() && message.endsWith("\n")) {
+        if (!command.isEmpty() && command.endsWith("\n")) {
             error = ERR_NONE;
             break;
         }
@@ -337,7 +337,7 @@ DMMErrorType DMMControl::readPort(void)
     return error;
 }
 
-DMMErrorType DMMControl::handleCmd(CmdIDType id, QString *cmd, QString *answer)
+DMMErrorType DMMControl::handleCmd(CmdIDType id, QString *cmd, QString *response)
 {
     DMMErrorType error = ERR_NONE;
     QString value;
@@ -358,7 +358,7 @@ DMMErrorType DMMControl::handleCmd(CmdIDType id, QString *cmd, QString *answer)
         handleFetch();
     case OPC_ID:
     case IDN_ID:
-        answer->append(cmds.at(id).answer);
+        response->append(cmds.at(id).response);
         break;
     // Regular commands
     case STAT_ID:
@@ -368,7 +368,7 @@ DMMErrorType DMMControl::handleCmd(CmdIDType id, QString *cmd, QString *answer)
     case VOLT_ID:
     case TRIG_ID:
     case SAMPLES_ID:
-        error = handleSubCmds(id, cmd, answer, &value);
+        error = handleSubCmds(id, cmd, response, &value);
         break;
     case CLS_ID:
     case RST_ID:
@@ -392,7 +392,7 @@ DMMErrorType DMMControl::handleCmd(CmdIDType id, QString *cmd, QString *answer)
 }
 
 DMMErrorType DMMControl::handleSubCmds(CmdIDType id, QString *cmd,
-                                       QString *answer, QString *value)
+                                       QString *response, QString *value)
 {
     DMMErrorType error = ERR_UNWANTED;
     QVector<CmdEntry> *subcmds;
@@ -420,7 +420,7 @@ DMMErrorType DMMControl::handleSubCmds(CmdIDType id, QString *cmd,
                 continue;
             if (subcmd.lastIndexOf('?') >= 0) {
                 cmd_ids[i + 1] = j;
-                answer->append(subcmds->at(j).answer);
+                response->append(subcmds->at(j).response);
                 error = ERR_NONE;
                 goto out;
             }
@@ -480,15 +480,15 @@ void DMMControl::handleFetch(void)
     QString voltStr;
     int id = (int) FETC_ID;
 
-    cmds[id].answer.clear();
+    cmds[id].response.clear();
     for (int i = 0; i < sampCount * trigCount; i++) {
         voltage = DMM_FETC_DBL;
         voltage += ((double) qrand() / (double) RAND_MAX - 0.5) / 10000;
         voltStr.setNum(voltage, 'f', 6);
-        cmds[id].answer += voltStr;
-        cmds[id].answer += ',';
+        cmds[id].response += voltStr;
+        cmds[id].response += ',';
     }
-    cmds[id].answer.chop(1);
+    cmds[id].response.chop(1);
 }
 
 
