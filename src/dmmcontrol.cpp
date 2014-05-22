@@ -234,6 +234,7 @@ int DMMControl::retrieveDMMVal(void)
     duration.setNum(time);
     values.insert(0, duration);
     values.insert(1, startTime.toString("hh:mm:ss"));
+    values.insert(2, sets->getCfgIntAsStr(SAMP_ID));
     qDebug() << "Values: " << values;
     emit sendResults(values);
 

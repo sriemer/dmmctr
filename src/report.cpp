@@ -17,7 +17,7 @@
 #endif
 #include "report.h"
 
-#define NUM_EXTRA_VALS 2
+#define NUM_EXTRA_VALS 3
 #define OUTPUT_CSV "out.csv"
 
 Report::Report()
@@ -29,12 +29,14 @@ void Report::writeToCsv(QStringList results, const QString csvApp = "")
 {
     int     ret;
     QFile   outputFile;
-    int     samples  = results.size() - NUM_EXTRA_VALS;
+    int     samples  = (results.size() - NUM_EXTRA_VALS) * results.at(2).toInt();
     int     valStart;
     int     valEnd;
+    long long j = 0;
     QDate   date = QDate::currentDate();
     QString sep = ";";
     QString tmpStr;
+    QStringList strList;
     double  tmpDbl;
     QString output;
     QLocale sysLocale = QLocale::system();
@@ -60,15 +62,20 @@ void Report::writeToCsv(QStringList results, const QString csvApp = "")
     valStart = NUM_EXTRA_VALS;
     valEnd   = results.size();
 
-    for (int i = valStart; i < valEnd; i++) {
+    for (long long i = valStart; i < valEnd; i++) {
+        QStringList::Iterator it;
         tmpStr = results.at(i);
-        tmpStr.replace('.', sysLocale.decimalPoint());
-        tmpDbl = tmpStr.toDouble();
-        tmpStr = QString("%1").arg(tmpDbl);
-        output.append(QString("%1%2%3")
-                      .arg((i - NUM_EXTRA_VALS) * 1000000)
-                      .arg(sep)
-                      .arg(tmpStr));
+        strList = tmpStr.split(',');
+        for (it = strList.begin(); it != strList.end(); ++it) {
+            it->replace('.', sysLocale.decimalPoint());
+            tmpDbl = it->toDouble();
+            tmpStr = QString("%1").arg(tmpDbl);
+            output.append(QString("%1%2%3\n")
+                          .arg(j * 1000000)
+                          .arg(sep)
+                          .arg(tmpStr));
+            j++;
+        }
     }
 
     qDebug() << "Output: " << output;
@@ -87,8 +94,9 @@ void Report::writeToCsv(QStringList results, const QString csvApp = "")
 #ifdef Q_OS_WIN
 void Report::exportToExcel(QStringList results, QString templatePath)
 {
-    int samples  = results.size() - NUM_EXTRA_VALS;
-    int valStart, valEnd, i;
+    int samples  = (results.size() - NUM_EXTRA_VALS) * results.at(2).toInt();
+    int valStart, valEnd;
+    long long i;
     QDate     date = QDate::currentDate();
     QLocale   sysLocale = QLocale::system();
     QAxObject *excel = new QAxObject();
