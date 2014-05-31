@@ -96,7 +96,7 @@ void Report::exportToExcel(QStringList results, QString templatePath)
 {
     int samples  = (results.size() - NUM_EXTRA_VALS) * results.at(2).toInt();
     int valStart, valEnd;
-    long long i;
+    long long i, j = 0;
     QDate     date = QDate::currentDate();
     QLocale   sysLocale = QLocale::system();
     QAxObject *excel = new QAxObject();
@@ -104,6 +104,7 @@ void Report::exportToExcel(QStringList results, QString templatePath)
     QFileInfo fi(templatePath);
     QStringList rprt;
     QString   tmpStr;
+    QStringList strList;
     double    tmpDbl;
 
     if (samples < 3) {
@@ -178,12 +179,17 @@ void Report::exportToExcel(QStringList results, QString templatePath)
     valEnd   = results.size();
 
     for (i = valStart; i < valEnd; i++) {
+        QStringList::Iterator it;
         tmpStr = results.at(i);
-        tmpStr.replace('.', sysLocale.decimalPoint());
-        tmpDbl = tmpStr.toDouble();
-        tmpStr = QString("%1").arg(tmpDbl);
-        rprt.append(QString("%L1").arg((i - NUM_EXTRA_VALS) * 1000000));
-        rprt.append(tmpStr);
+        strList = tmpStr.split(',');
+        for (it = strList.begin(); it != strList.end(); ++it) {
+            it->replace('.', sysLocale.decimalPoint());
+            tmpDbl = it->toDouble();
+            tmpStr = QString("%1").arg(tmpDbl);
+            rprt.append(QString("%L1").arg(j * 1000000));
+            rprt.append(tmpStr);
+            j++;
+        }
     }
 
     for (i = 0; i < rprt.size(); i += 2) {
