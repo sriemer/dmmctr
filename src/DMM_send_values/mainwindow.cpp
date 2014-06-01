@@ -101,7 +101,7 @@ void MainWindow::initThreads()
     connect(dmmCtr, SIGNAL(sendClearError()), errorIndicat, SLOT(setOff()));
     connect(dmmCtr, SIGNAL(sendEnable()), portCtr, SLOT(enable()));
     connect(dmmCtr, SIGNAL(sendSetCommand(QString)),
-            responseDisplay, SLOT(setText(QString)));
+            commandDisplay, SLOT(setText(QString)));
     connect(dmmCtr, SIGNAL(sendSetResponse(QString)),
             responseDisplay, SLOT(setText(QString)));
     connect(dmmCtr, SIGNAL(sendDisplayOn()), displayIndicat, SLOT(setOn()));
