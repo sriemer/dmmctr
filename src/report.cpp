@@ -39,7 +39,6 @@ void Report::writeToCsv(QStringList results, const QString csvApp = "")
     QStringList strList;
     double  tmpDbl;
     QString output;
-    QLocale sysLocale = QLocale::system();
 
     if (samples < 3)
         return;
@@ -67,9 +66,8 @@ void Report::writeToCsv(QStringList results, const QString csvApp = "")
         tmpStr = results.at(i);
         strList = tmpStr.split(',');
         for (it = strList.begin(); it != strList.end(); ++it) {
-            it->replace('.', sysLocale.decimalPoint());
             tmpDbl = it->toDouble();
-            tmpStr = QString("%1").arg(tmpDbl);
+            tmpStr = QString("%L1").arg(tmpDbl);
             output.append(QString("%1%2%3\n")
                           .arg(j * 1000000)
                           .arg(sep)
@@ -82,13 +80,13 @@ void Report::writeToCsv(QStringList results, const QString csvApp = "")
     outputFile.setFileName(OUTPUT_CSV);
     outputFile.open(QIODevice::Truncate |
                     QIODevice::WriteOnly);
-    outputFile.write(output.toAscii());
+    outputFile.write(output.toLatin1());
     outputFile.close();
 
     tmpStr = csvApp;
     tmpStr.append(" " OUTPUT_CSV);
-    ret = system(tmpStr.toAscii());
-    qDebug() << "system(" << tmpStr.toAscii() << ") returned " << ret << ".";
+    ret = system(tmpStr.toLatin1());
+    qDebug() << "system(" << tmpStr.toLatin1() << ") returned " << ret << ".";
 }
 
 #ifdef Q_OS_WIN
@@ -98,7 +96,6 @@ void Report::exportToExcel(QStringList results, QString templatePath)
     int valStart, valEnd;
     long long i, j = 0;
     QDate     date = QDate::currentDate();
-    QLocale   sysLocale = QLocale::system();
     QAxObject *excel = new QAxObject();
     QAxObject *wb, *awb, *ws, *aws, *cell;
     QFileInfo fi(templatePath);
@@ -183,9 +180,8 @@ void Report::exportToExcel(QStringList results, QString templatePath)
         tmpStr = results.at(i);
         strList = tmpStr.split(',');
         for (it = strList.begin(); it != strList.end(); ++it) {
-            it->replace('.', sysLocale.decimalPoint());
             tmpDbl = it->toDouble();
-            tmpStr = QString("%1").arg(tmpDbl);
+            tmpStr = QString("%L1").arg(tmpDbl);
             rprt.append(QString("%L1").arg(j * 1000000));
             rprt.append(tmpStr);
             j++;

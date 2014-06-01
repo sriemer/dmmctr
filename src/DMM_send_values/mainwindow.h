@@ -14,6 +14,13 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QtGlobal>
+#ifndef QT_VERSION
+    #error QT_VERSION not defined!
+#endif
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    #include <QtWidgets>
+#endif
 #include <QMainWindow>
 #include "../settings.h"
 #include "../serialportctr.h"
@@ -45,8 +52,6 @@ public slots:
     void reinitPorts(QStringList portNames);
     void setError();
     void portsDetected();
-    void setCommand(QString cmd);
-    void setAnswer(QString answ);
     void ctrStarted();
     void ctrStopped();
 
@@ -78,9 +83,9 @@ private:
     LEDIndicator *timeoutIndicat;
     LEDIndicator *errorIndicat;
     QLabel       *commandLabel;
-    QLabel       *answerLabel;
+    QLabel       *responseLabel;
     QTextBrowser *commandDisplay;
-    QTextBrowser *answerDisplay;
+    QTextBrowser *responseDisplay;
 
     QGroupBox    *settingsGroup;
     QVBoxLayout  *settingsLayout;

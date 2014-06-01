@@ -9,7 +9,6 @@ MOC_DIR = tmp
 UI_DIR = tmp
 HEADERS = mainwindow.h \
     dmmcontrol.h \
-    config.h \
     settings.h \
     ledindicator.h \
     report.h \
@@ -18,7 +17,6 @@ HEADERS = mainwindow.h \
 SOURCES = main.cpp \
     mainwindow.cpp \
     dmmcontrol.cpp \
-    config.cpp \
     settings.cpp \
     ledindicator.cpp \
     report.cpp \
@@ -30,7 +28,12 @@ RESOURCES += ledindicator.qrc \
 OTHER_FILES += appicon.rc
 CONFIG += xml \
     extserialport
-LIBS += -lqextserialport
+greaterThan(QT_MAJOR_VERSION, 4) {
+    QT += widgets
+    LIBS += -lQt5ExtSerialPort
+} else {
+    LIBS += -lqextserialport
+}
 QMAKE_RESOURCE_FLAGS += -no-compress
 win32 { 
     LIBS += -lsetupapi \

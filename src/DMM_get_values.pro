@@ -28,7 +28,12 @@ RESOURCES += ledindicator.qrc \
 OTHER_FILES += appicon.rc
 CONFIG += xml \
     extserialport
-LIBS += -lqextserialport
+greaterThan(QT_MAJOR_VERSION, 4) {
+    QT += widgets
+    LIBS += -lQt5ExtSerialPort
+} else {
+    LIBS += -lqextserialport
+}
 QMAKE_RESOURCE_FLAGS += -no-compress
 win32 { 
     LIBS += -lsetupapi \

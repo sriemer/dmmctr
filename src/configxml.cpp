@@ -11,6 +11,13 @@
  * GNU General Public License for more details.
  */
 
+#include <QtGlobal>
+#ifndef QT_VERSION
+    #error QT_VERSION not defined!
+#endif
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    #include <QtCore>
+#endif
 #include <QtXml/QtXml>
 #include <QFile>
 #include <QDebug>

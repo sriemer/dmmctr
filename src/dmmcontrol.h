@@ -14,6 +14,13 @@
 #ifndef DMMCONTROL_H
 #define DMMCONTROL_H
 
+#include <QtGlobal>
+#ifndef QT_VERSION
+    #error QT_VERSION not defined!
+#endif
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    #include <QtCore>
+#endif
 #include <QThread>
 #include <qextserialport.h>
 

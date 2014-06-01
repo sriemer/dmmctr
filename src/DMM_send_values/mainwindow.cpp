@@ -12,6 +12,13 @@
  */
 
 #include <QtGui>
+#include <QtGlobal>
+#ifndef QT_VERSION
+    #error QT_VERSION not defined!
+#endif
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    #include <QtWidgets>
+#endif
 
 #include "mainwindow.h"
 #include "../settings.h"
@@ -54,9 +61,9 @@ MainWindow::MainWindow()
     timeoutIndicat     = new LEDIndicator(LED_RED, tr("Timeout"), "font: bold");
     errorIndicat       = new LEDIndicator(LED_RED, tr("Error"), "font: bold");
     commandLabel       = new QLabel;
-    answerLabel        = new QLabel;
+    responseLabel      = new QLabel;
     commandDisplay     = new QTextBrowser;
-    answerDisplay      = new QTextBrowser;
+    responseDisplay    = new QTextBrowser;
     settingsGroup      = new QGroupBox;
     settingsLayout     = new QVBoxLayout;
     displayIndicat     = new LEDIndicator(LED_GREEN, tr("Display"), "");
@@ -94,9 +101,9 @@ void MainWindow::initThreads()
     connect(dmmCtr, SIGNAL(sendClearError()), errorIndicat, SLOT(setOff()));
     connect(dmmCtr, SIGNAL(sendEnable()), portCtr, SLOT(enable()));
     connect(dmmCtr, SIGNAL(sendSetCommand(QString)),
-            this, SLOT(setCommand(QString)));
-    connect(dmmCtr, SIGNAL(sendSetAnswer(QString)),
-            this, SLOT(setAnswer(QString)));
+            responseDisplay, SLOT(setText(QString)));
+    connect(dmmCtr, SIGNAL(sendSetResponse(QString)),
+            responseDisplay, SLOT(setText(QString)));
     connect(dmmCtr, SIGNAL(sendDisplayOn()), displayIndicat, SLOT(setOn()));
     connect(dmmCtr, SIGNAL(sendDisplayOff()), displayIndicat, SLOT(setOff()));
     connect(dmmCtr, SIGNAL(sendTrigCount(QString)), trigCountDisplay, SLOT(setText(QString)));
@@ -168,8 +175,8 @@ void MainWindow::initLayout()
     centerLayout->addWidget(progCtrFrame, 0, Qt::AlignLeft);
     centerLayout->addWidget(commandLabel, 0);
     centerLayout->addWidget(commandDisplay, 0);
-    centerLayout->addWidget(answerLabel, 0);
-    centerLayout->addWidget(answerDisplay, 0);
+    centerLayout->addWidget(responseLabel, 0);
+    centerLayout->addWidget(responseDisplay, 0);
     centerLayout->addStretch(400);
     centerWidget->setLayout(centerLayout);
 
@@ -219,9 +226,9 @@ void MainWindow::initControls()
     connect(stopButton, SIGNAL(released()), this, SLOT(stop()));
 
     commandLabel->setText(tr("Command"));
-    answerLabel->setText(tr("Answer"));
+    responseLabel->setText(tr("Response"));
     commandDisplay->setMaximumSize(progCtrFrame->sizeHint().width(), 90);
-    answerDisplay->setMaximumSize(progCtrFrame->sizeHint().width(), 90);
+    responseDisplay->setMaximumSize(progCtrFrame->sizeHint().width(), 90);
 
     settingsGroup->setTitle(tr("Settings"));
     displayIndicat->setOn();
@@ -294,16 +301,6 @@ void MainWindow::portsDetected()
     }
 }
 
-void MainWindow::setCommand(QString cmd)
-{
-    commandDisplay->setText(cmd);
-}
-
-void MainWindow::setAnswer(QString answ)
-{
-    answerDisplay->setText(answ);
-}
-
 void MainWindow::ctrStarted()
 {
     qDebug() << "MainWindow::ctrStarted() received";
@@ -357,7 +354,7 @@ void MainWindow::start()
     startButton->setEnabled(false);
     portGroup->setEnabled(false);
     commandDisplay->clear();
-    answerDisplay->clear();
+    responseDisplay->clear();
 
     // Port config
     sets->setCfgID(PORT_ID,   portComboBox->currentIndex());

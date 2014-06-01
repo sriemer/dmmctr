@@ -14,6 +14,14 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
+#include <QtGlobal>
+#include <QtCore>
+#ifndef QT_VERSION
+    #error QT_VERSION not defined!
+#endif
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    #include <QtWidgets>
+#endif
 #include <qextserialport.h>
 #include <QDebug>
 #include <QObject>

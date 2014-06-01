@@ -304,7 +304,7 @@ int DMMControl::readAndSendBack(void)
     if (!response.isEmpty()) {
         response.append("\r\n");
         qDebug() << "response: " << response;
-        serPort->write(response.toAscii(), response.length());
+        serPort->write(response.toLatin1(), response.length());
         if (serPort->lastError()) {
             qDebug() << serPort->errorString();
             error = ERR_UNWANTED;

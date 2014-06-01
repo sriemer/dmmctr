@@ -246,7 +246,7 @@ int DMMControl::send(void)
     int ret;
 
     qDebug() << command;
-    serPort->write(command.toAscii(), command.length());
+    serPort->write(command.toLatin1(), command.length());
     ret = !!serPort->lastError();
     if (ret)
         qDebug() << serPort->errorString();
