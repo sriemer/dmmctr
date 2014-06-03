@@ -135,9 +135,9 @@ Settings::Settings()
     idx = RANGE_ID;
     sets[idx].name      = "range";
     sets[idx].lblText   = tr("Range");
-    sets[idx].dispType  = DISP_SL_VEC;
-    sets[idx].dispVals.slVec = QVector<QStringList>()
-        << (QStringList() << tr("auto") << "100 mV" << "1 V" << "10 V" << "100 V" << "1000 V");
+    sets[idx].dispType  = DISP_STRINGS;
+    sets[idx].dispVals.strings = QStringList() << tr("auto") << "100 mV" << "1 V" << "10 V"
+        << "100 V" << "1000 V";
     sets[idx].valType   = VAL_STRINGS;
     sets[idx].values.strings = QStringList() << "DEF" << "0.1" << "1" << "10" << "100" << "1000";
     sets[idx].cfgType    = CFG_ID;

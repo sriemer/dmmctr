@@ -144,8 +144,16 @@ int DMMControl::initDMM(void)
     if (ret || stopRequested)
         goto out;
 
-    // set DMM function
+    // set DMM function with range and resolution
     command = sets->getStringFromID(FUNCT_ID);
+    if (sets->getCfgID(RANGE_ID) != 0) {
+        command.append(" ");
+        command.append(sets->getStringFromID(RANGE_ID));
+        if (sets->getCfgID(RESOL_ID) != 0) {
+            command.append(", ");
+            command.append(sets->getStringFromID(RESOL_ID));
+        }
+    }
     command.append(";\n" DMM_SYS_ERR);
     expected = DMM_SYS_EXP;
     ret = sendAndReadBack(&expected);
