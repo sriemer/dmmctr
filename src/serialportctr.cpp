@@ -134,9 +134,11 @@ QextSerialPort *SerialPortCtr::openPort(Settings *sets)
     QextSerialPort *port = new QextSerialPort(portStr, QextSerialPort::Polling);
 
     configurePort(port, sets);
-    if (!port->open(QIODevice::ReadWrite | QIODevice::Unbuffered))
+    if (!port->open(QIODevice::ReadWrite | QIODevice::Unbuffered)) {
+        qDebug() << "QextSerialPort open() error:" << port->errorString();
+        delete port;
         return NULL;
-
+    }
     return port;
 }
 
