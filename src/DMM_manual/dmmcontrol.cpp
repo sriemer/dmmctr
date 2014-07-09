@@ -133,21 +133,6 @@ out:
     return ret;
 }
 
-int DMMControl::retrieveDMMVal(void)
-{
-    int ret = 0;
-    QString expected;
-
-    do {
-        sleep(1);
-        // check DMM status
-        expected = DMM_ANY;
-        ret = sendAndReadBack(&expected);
-        command = "";
-    } while (!ret && !stopRequested);
-    return ret;
-}
-
 int DMMControl::send(void)
 {
     int ret;
@@ -263,6 +248,8 @@ void DMMControl::requestStop()
 
 void DMMControl::sendCommand(QString cmd)
 {
+    QString expected = DMM_ANY;
     command = cmd;
-    retrieveDMMVal();
+    sendAndReadBack(&expected);
+    command = "";
 }
