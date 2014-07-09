@@ -58,7 +58,7 @@ signals:
 
 public slots:
     void setReady();
-    void setCommand(QString cmd);
+    void sendCommand(QString cmd);
     void requestStop();
 
 private:

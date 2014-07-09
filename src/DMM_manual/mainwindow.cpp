@@ -97,8 +97,6 @@ void MainWindow::initThreads()
     connect(dmmCtr, SIGNAL(sendSetError()), this, SLOT(setError()));
     connect(dmmCtr, SIGNAL(sendClearError()), errorIndicat, SLOT(setOff()));
     connect(dmmCtr, SIGNAL(sendEnable()), portCtr, SLOT(enable()));
-    connect(this, SIGNAL(sendSetCommand(QString)),
-            dmmCtr, SLOT(setCommand(QString)));
     connect(dmmCtr, SIGNAL(sendSetResponse(QString)),
             responseDisplay, SLOT(setText(QString)));
     connect(dmmCtr, SIGNAL(sendStarted()), this, SLOT(ctrStarted()));
@@ -368,5 +366,5 @@ void MainWindow::stop()
 void MainWindow::sendCommand()
 {
     qDebug() << "MainWindow::sendCommand() received";
-    dmmCtr->setCommand(commandDisplay->toPlainText());
+    dmmCtr->sendCommand(commandDisplay->toPlainText());
 }

@@ -68,8 +68,10 @@ void DMMControl::run()
         ret = initDMM();
         if (ret || stopRequested)
             goto stop_dmm;
-	command = "";
-        ret = retrieveDMMVal();
+        command = "";
+        do
+            sleep(1);
+        while (!stopRequested);
 
 stop_dmm:
         stopDMMCtr();
@@ -141,7 +143,7 @@ int DMMControl::retrieveDMMVal(void)
         // check DMM status
         expected = DMM_ANY;
         ret = sendAndReadBack(&expected);
-	command = "";
+        command = "";
     } while (!ret && !stopRequested);
     return ret;
 }
@@ -178,7 +180,7 @@ int DMMControl::sendAndReadBack(T *expected, int timeout)
         if (ret != ERR_TIMEOUT)
             break;
         emit sendSetTimeout();
-	if (response.isEmpty())
+        if (response.isEmpty())
             goto out;
         if (i == (READ_TRIES - 1))  // unlikely: not empty and still timed out
             ret = ERR_UNWANTED;
@@ -259,7 +261,8 @@ void DMMControl::requestStop()
         stopRequested = true;
 }
 
-void DMMControl::setCommand(QString cmd)
+void DMMControl::sendCommand(QString cmd)
 {
-	command = cmd;
+    command = cmd;
+    retrieveDMMVal();
 }
