@@ -101,9 +101,9 @@ Settings::Settings()
     sets[idx].name      = "funct";
     sets[idx].lblText   = tr("Function");
     sets[idx].dispType  = DISP_STRINGS;
-    sets[idx].dispVals.strings = QStringList() << tr("DC Volts");
+    sets[idx].dispVals.strings = QStringList() << tr("DC Volts") << tr("DC Current");
     sets[idx].valType   = VAL_STRINGS;
-    sets[idx].values.strings = QStringList() << "CONF:VOLT:DC";
+    sets[idx].values.strings = QStringList() << "CONF:VOLT:DC" << "CONF:CURR:DC";
     sets[idx].cfgType   = CFG_ID;
     sets[idx].defVal.id = 0;
     sets[idx].cfgVal.id = 0;
@@ -135,11 +135,17 @@ Settings::Settings()
     idx = RANGE_ID;
     sets[idx].name      = "range";
     sets[idx].lblText   = tr("Range");
-    sets[idx].dispType  = DISP_STRINGS;
-    sets[idx].dispVals.strings = QStringList() << tr("auto") << "100 mV" << "1 V" << "10 V"
-        << "100 V" << "1000 V";
-    sets[idx].valType   = VAL_STRINGS;
-    sets[idx].values.strings = QStringList() << "DEF" << "0.1" << "1" << "10" << "100" << "1000";
+    sets[idx].dispType  = DISP_SL_VEC;
+    sets[idx].dispVals.slVec = QVector<QStringList>()
+        << (QStringList() << tr("auto") << "100 mV" << "1 V" << "10 V"
+        << "100 V" << "1000 V")
+        << (QStringList() << tr("auto") << "100 uA" << "1 mA" << "10 mA"
+        << "100 mA" << "1 A" << "10 A");
+    sets[idx].valType   = VAL_SL_VEC;
+    sets[idx].values.slVec = QVector<QStringList>()
+        << (QStringList() << "DEF" << "0.1" << "1" << "10" << "100" << "1000")
+        << (QStringList() << "DEF" << "0.0001" << "0.001" << "0.01"
+        << "0.1" << "1" << "10");
     sets[idx].cfgType    = CFG_ID;
     sets[idx].defVal.id  = 0;
     sets[idx].defVal.id2 = 0;

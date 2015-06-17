@@ -198,7 +198,12 @@ protected:
     inline QString getStringFromID(SetIDType id)
     {
         int cfg_id = sets[id].cfgVal.id;
-        return sets[id].values.strings.value(cfg_id);
+        int cfg_id2 = sets[id].cfgVal.id2;
+
+        if (sets[id].valType == VAL_SL_VEC)
+            return sets[id].values.slVec[cfg_id2].value(cfg_id);
+        else
+            return sets[id].values.strings.value(cfg_id);
     }
 
     inline BaudRateType getBaudFromID(SetIDType id)
