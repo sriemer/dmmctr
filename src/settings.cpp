@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2011..14, by:  Sebastian Riemer
- *    All rights reserved.     <sebastian.riemer@gmx.de>
+ * Copyright (c) 2011..2015 Sebastian Parschauer <s.parschauer@gmx.de>
  *
  * This file may be used subject to the terms and conditions of the
  * GNU General Public License Version 3, or any later version

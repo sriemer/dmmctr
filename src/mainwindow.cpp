@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2011..14, by:  Sebastian Riemer
- *    All rights reserved.     <sebastian.riemer@gmx.de>
+ * Copyright (c) 2011..2015 Sebastian Parschauer <s.parschauer@gmx.de>
  *
  * This file may be used subject to the terms and conditions of the
  * GNU General Public License Version 3, or any later version
@@ -485,8 +484,8 @@ void MainWindow::displayAbout()
 {
     QMessageBox::about(this, tr("About").append(" " PROG_NAME),
            QString("<h2>" PROG_NAME " " PROG_VERSION "</h2>").append(
-           tr("<p>Copyright &copy; 2011-2014 Sebastian Riemer "
-              "&lt;sebastian.riemer@gmx.de&gt;. All rights reserved."
+           tr("<p>Copyright &copy; 2011-2015 Sebastian Parschauer "
+              "&lt;s.parschauer@gmx.de&gt;. All rights reserved."
               "<p>License: GNU General Public License Version 3"
               "<p>This program is distributed in the hope that it "
               "will be useful, but WITHOUT ANY WARRANTY; without "
