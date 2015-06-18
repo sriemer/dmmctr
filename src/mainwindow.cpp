@@ -333,6 +333,7 @@ void MainWindow::initControls()
     connect(startButton, SIGNAL(released()), this, SLOT(start()));
     connect(stopButton, SIGNAL(released()), this, SLOT(stop()));
     connect(exportClrButton, SIGNAL(released()), this, SLOT(clearExportText()));
+    connect(measFunct, SIGNAL(currentIndexChanged(int)), this, SLOT(changeFunction(int)));
 }
 
 void MainWindow::initPortControls()
@@ -596,4 +597,12 @@ void MainWindow::selectXls()
 void MainWindow::clearExportText()
 {
     exportLineEdit->clear();
+}
+
+// ComboBox event
+void MainWindow::changeFunction(int id)
+{
+    measRange->clear();
+    sets->setCfgID2(RANGE_ID, id);
+    sets->initComboBox(RANGE_ID, measRangeLbl, measRange);
 }

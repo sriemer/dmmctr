@@ -144,6 +144,9 @@ private slots:
     void selectCsvApp    (void);
     void selectXls       (void);
     void clearExportText (void);
+
+    // ComboBox events
+    void changeFunction  (int id);
 };
 
 #endif
