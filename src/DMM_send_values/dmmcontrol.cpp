@@ -134,6 +134,14 @@ void DMMControl::initCmds(void)
     cmd_en.response.clear();
     cmd_en.subcmds = NULL;
     cmds[idx].subcmds->last().subcmds->append(cmd_en);
+    cmd_en.cmd = "CURR";
+    cmd_en.response.clear();
+    cmd_en.subcmds = new QVector<CmdEntry>();
+    cmds[idx].subcmds->append(cmd_en);
+    cmd_en.cmd = "DC";
+    cmd_en.response.clear();
+    cmd_en.subcmds = NULL;
+    cmds[idx].subcmds->last().subcmds->append(cmd_en);
 
     idx = VOLT_ID;
     cmds[idx].cmd = "VOLT";
