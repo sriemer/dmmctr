@@ -160,15 +160,14 @@ int DMMControl::initDMM(void)
         goto out;
 
     // set DC volts intgration time
-    if (sets->getCfgID(FUNCT_ID) == 0) {  //TODO compare with enum
-       command = "VOLT:DC:NPLC ";
-       command.append(sets->getStringFromID(INTEGR_ID));
-       command.append(";\n" DMM_SYS_ERR);
-       expected = DMM_SYS_EXP;
-       ret = sendAndReadBack(&expected);
-       if (ret || stopRequested)
-           goto out;
-    }
+    command = sets->getStringFromID(FUNCT_ID).split(':')[1];
+    command += ":DC:NPLC ";
+    command.append(sets->getStringFromID(INTEGR_ID));
+    command.append(";\n" DMM_SYS_ERR);
+    expected = DMM_SYS_EXP;
+    ret = sendAndReadBack(&expected);
+    if (ret || stopRequested)
+        goto out;
 
     // set trigger config
     command = ":TRIG:DEL ";
