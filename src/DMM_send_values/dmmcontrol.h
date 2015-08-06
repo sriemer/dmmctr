@@ -41,6 +41,7 @@ typedef enum {
     ZERO_ID,
     CONF_ID,
     VOLT_ID,
+    CURR_ID,
     TRIG_ID,
     SAMPLES_ID,
     INIT_ID,

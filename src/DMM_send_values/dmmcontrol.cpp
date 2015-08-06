@@ -155,6 +155,18 @@ void DMMControl::initCmds(void)
     cmd_en.subcmds = NULL;
     cmds[idx].subcmds->last().subcmds->append(cmd_en);
 
+    idx = CURR_ID;
+    cmds[idx].cmd = "CURR";
+    cmds[idx].subcmds = new QVector<CmdEntry>();
+    cmd_en.cmd = "DC";
+    cmd_en.response.clear();
+    cmd_en.subcmds = new QVector<CmdEntry>();
+    cmds[idx].subcmds->append(cmd_en);
+    cmd_en.cmd = "NPLC";
+    cmd_en.response.clear();
+    cmd_en.subcmds = NULL;
+    cmds[idx].subcmds->last().subcmds->append(cmd_en);
+
     idx = TRIG_ID;
     cmds[idx].cmd = "TRIG";
     cmds[idx].subcmds = new QVector<CmdEntry>();
@@ -394,6 +406,7 @@ DMMErrorType DMMControl::handleCmd(CmdIDType id, QString *cmd, QString *response
     case ZERO_ID:
     case CONF_ID:
     case VOLT_ID:
+    case CURR_ID:
     case TRIG_ID:
     case SAMPLES_ID:
         error = handleSubCmds(id, cmd, response, &value);
