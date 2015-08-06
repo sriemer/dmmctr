@@ -285,6 +285,7 @@ void MainWindow::initControls()
     stopButton->setStyleSheet("color: red");
 
     sets->initComboBox(FUNCT_ID, measFunctLbl, measFunct);
+    sets->setCfgID2(RANGE_ID, sets->getCfgID(FUNCT_ID));
 
     sets->initComboBox(INTEGR_ID, measIntegrTimeLbl, measIntegrTime);
 
