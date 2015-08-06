@@ -22,15 +22,18 @@
 #endif
 #include <QStringList>
 
+#include "settings.h"
+
 class Report
 {
 public:
-    Report();
+    Report(Settings *settings);
     void writeToCsv(QStringList results, const QString csvApp);
 #ifdef Q_OS_WIN
     void exportToExcel(QStringList results, QString templatePath);
 #endif
 private:
+    Settings *sets;
 };
 
 #endif

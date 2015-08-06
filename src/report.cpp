@@ -19,9 +19,9 @@
 #define NUM_EXTRA_VALS 3
 #define OUTPUT_CSV "out.csv"
 
-Report::Report()
+Report::Report(Settings *settings)
 {
-
+    sets = settings;
 }
 
 void Report::writeToCsv(QStringList results, const QString csvApp = "")
@@ -47,7 +47,10 @@ void Report::writeToCsv(QStringList results, const QString csvApp = "")
     output.append(QString("\nDate%1%2").arg(sep)
                   .arg(date.toString("dd.MM.yyyy")));
     output.append(QString("\nTime%1%2").arg(sep).arg(results.at(1)));
-    output.append(QString("\nY_Unit_Label %1").arg("Voltage (V)"));
+    if (sets->getStringFromID(FUNCT_ID).split(':')[1] == "VOLT")
+        output.append(QString("\nY_Unit_Label %1").arg("Voltage (V)"));
+    else
+        output.append(QString("\nY_Unit_Label %1").arg("Current (A)"));
     tmpStr = QString("%L1").arg(results.at(0).toDouble()
                              / (double)samples / 1000.0);
     output.append(QString("%1%1%1Interval [s]%1%2").arg(sep).arg(tmpStr));
@@ -162,7 +165,10 @@ void Report::exportToExcel(QStringList results, QString templatePath)
     rprt.append("Date");
     rprt.append(QString("%1").arg(date.toString("dd.MM.yyyy")));
     rprt.append("Time"); rprt.append(QString("%1").arg(results.at(1)));
-    rprt.append(QString("Y_Unit_Label %1").arg("Voltage (V)"));
+    if (sets->getStringFromID(FUNCT_ID).split(':')[1] == "VOLT")
+        rprt.append(QString("Y_Unit_Label %1").arg("Voltage (V)"));
+    else
+        rprt.append(QString("Y_Unit_Label %1").arg("Current (A)"));
     rprt.append("");
     rprt.append(QString("X_Dimension %1").arg("Iteration"));
     rprt.append("");

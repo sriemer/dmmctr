@@ -413,18 +413,19 @@ void MainWindow::portsDetected()
 
 void MainWindow::setResults(QStringList strList)
 {
-    Report report;
+    Report *report = new Report(sets);
 
     if (sets->getCfgID(EXPORT_ID) == EXPORT_CSV) {
-        report.writeToCsv(strList, exportLineEdit->text());
+        report->writeToCsv(strList, exportLineEdit->text());
         sets->setCfgStr(CSV_PATH_STR, exportLineEdit->text());
     }
 #ifdef Q_OS_WIN
     else {
-        report.exportToExcel(strList, exportLineEdit->text());
+        report->exportToExcel(strList, exportLineEdit->text());
         sets->setCfgStr(XLS_PATH_STR, exportLineEdit->text());
     }
 #endif
+    delete report;
 
     ConfigXml cfgXml(sets);
     cfgXml.writeConfigFile(CFG_FILE_DEFAULT);

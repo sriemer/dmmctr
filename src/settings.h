@@ -132,6 +132,7 @@ friend class MainWindow;
 friend class SerialPortCtr;
 friend class DMMControl;
 friend class ConfigXml;
+friend class Report;
 
 protected:
     Settings();
