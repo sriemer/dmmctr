@@ -89,6 +89,9 @@ void DMMControl::stopDMMCtr(void)
     if (send())
         emit sendSetError();
 
+    // ensure that the last command gets sent
+    msleep(10);
+
     portCtr->closePort(serPort);
     delete serPort;
     serPort = NULL;
