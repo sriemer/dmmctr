@@ -189,11 +189,15 @@ out:
 int DMMControl::retrieveDMMVal(void)
 {
     int ret = 0;
+    int samplesPerCycle = sets->getCfgInt(SAMP_ID);
     QString expected;
     QRegExp expRegExp;
     QTime   startTime;
     QString duration;
     QStringList values;
+
+    if (sets->getCfgInt(TRIG_CNT_ID) > 0)
+        samplesPerCycle *= sets->getCfgInt(TRIG_CNT_ID);
 
     startTime = QTime::currentTime();
     time = QDateTime::currentMSecsSinceEpoch();  // Qt 4.7 needed
@@ -217,12 +221,11 @@ int DMMControl::retrieveDMMVal(void)
         command = "INIT;\nFETC?\n";
         expRegExp.setPattern("^[+-]");
         ret = sendAndReadBack(&expRegExp,
-            RD_DEF_TIMEOUT * sets->getCfgInt(SAMP_ID));
+            RD_DEF_TIMEOUT * samplesPerCycle);
         if (ret)
             break;
 
         values.append(response);
-        sampleCount += sets->getCfgInt(SAMP_ID);
 
         command = ":STAT:QUES:EVEN?\n";
         expRegExp.setPattern("^[+-]");
@@ -231,6 +234,8 @@ int DMMControl::retrieveDMMVal(void)
             values.removeLast();
             break;
         }
+
+        sampleCount += samplesPerCycle;
 
         // check DMM status
         command  = DMM_SYS_ERR;
@@ -243,7 +248,7 @@ int DMMControl::retrieveDMMVal(void)
     duration.setNum(time);
     values.insert(0, duration);
     values.insert(1, startTime.toString("hh:mm:ss"));
-    values.insert(2, sets->getCfgIntAsStr(SAMP_ID));
+    values.insert(2, QString().setNum(samplesPerCycle));
     qDebug() << "Values: " << values;
     emit sendResults(values);
 
