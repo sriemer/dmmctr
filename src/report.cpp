@@ -69,7 +69,7 @@ void Report::writeToCsv(QStringList results, const QString csvApp = "")
         strList = tmpStr.split(',');
         for (it = strList.begin(); it != strList.end(); ++it) {
             tmpDbl = it->toDouble();
-            tmpStr = QString("%L1").arg(tmpDbl);
+            tmpStr = QString("%L1").arg(tmpDbl, 0, 'f', 12);
             output.append(QString("%1%2%3\n")
                           .arg(j * 1000000)
                           .arg(sep)
@@ -186,7 +186,7 @@ void Report::exportToExcel(QStringList results, QString templatePath)
         strList = tmpStr.split(',');
         for (it = strList.begin(); it != strList.end(); ++it) {
             tmpDbl = it->toDouble();
-            tmpStr = QString("%L1").arg(tmpDbl);
+            tmpStr = QString("%L1").arg(tmpDbl, 0, 'f', 12);
             rprt.append(QString("%L1").arg(j * 1000000));
             rprt.append(tmpStr);
             j++;
